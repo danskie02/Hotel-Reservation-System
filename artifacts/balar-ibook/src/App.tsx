@@ -70,7 +70,7 @@ function Router() {
       </Route>
 
       {/* Public Routes */}
-      <Route path="/">
+      <Route path="/" nest>
         <Layout>
           <Switch>
             <Route path="/" component={Home} />

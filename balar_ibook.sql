@@ -88,31 +88,49 @@ INSERT INTO "users" ("full_name", "email", "contact_number", "password_hash", "r
     ('Ana Reyes',           'ana@example.com',      '+63 919 333 4455',
      '$2a$10$D6Z2u5d/3K6uWfPS1Y3rZeC5R2dA5p8N0Z9m9aQ6nM3JwQdb6n7Tu', 'guest');
 
--- Rooms -------------------------------------------------------
+-- Rooms (7 room types, 37 total rooms) -----------------------
 INSERT INTO "rooms" ("name", "description", "price", "capacity", "total_units", "image_url", "features") VALUES
     ('Standard Room',
-     'A comfortable and cozy room perfect for solo travelers or couples. Features a queen-size bed, modern bathroom, air conditioning, and complimentary Wi-Fi.',
-     2800.00, 2, 5,
+     'A comfortable and well-appointed room ideal for solo travelers and couples. Features a queen-size bed, modern bathroom, air conditioning, and complimentary Wi-Fi.',
+     2800.00, 2, 8,
      'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1200&q=80',
-     ARRAY['Queen-size bed', 'Air conditioning', 'Free Wi-Fi', 'Cable TV', 'Modern bathroom']),
+     ARRAY['Queen-size bed', 'Air conditioning', 'Free Wi-Fi', 'Cable TV', 'Hot & cold shower']),
 
     ('Deluxe Room',
-     'Spacious and elegantly designed room with enhanced amenities. Includes a king-size bed, premium bedding, workspace, and stunning views of the Marinduque coast.',
-     4500.00, 3, 4,
+     'Spacious and elegantly furnished room with enhanced amenities. Includes a king-size bed, premium bedding, work desk, and refined finishes throughout.',
+     4200.00, 3, 5,
      'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80',
-     ARRAY['King-size bed', 'Premium bedding', 'Work desk', 'Mini fridge', 'Coffee maker', 'Sea view']),
+     ARRAY['King-size bed', 'Premium bedding', 'Work desk', 'Mini fridge', 'Coffee maker', 'Smart TV']),
 
-    ('Family Suite',
-     'Generous suite ideal for families. Two bedrooms, a living area, and a private balcony overlooking the gardens.',
-     7500.00, 5, 3,
-     'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
-     ARRAY['Two bedrooms', 'Living area', 'Private balcony', 'Mini bar', 'Bathtub', 'Garden view']),
+    ('Superior Quadruple Room',
+     'Generously sized room designed for groups of four. Two double beds, a comfortable lounge corner, and ample storage make group stays effortless.',
+     5500.00, 4, 4,
+     'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=80',
+     ARRAY['Two double beds', 'Lounge corner', 'Air conditioning', 'Smart TV', 'Spacious bath']),
 
-    ('Premier Suite',
-     'Our flagship suite offers the ultimate in luxury hospitality. Includes a master bedroom, living room, dining nook, and a private terrace with ocean views.',
-     12000.00, 4, 2,
+    ('Premier Quadruple Room',
+     'An upgraded quadruple option with premium furnishings, larger windows, and refined amenities for groups seeking a more luxurious stay.',
+     6800.00, 4, 5,
+     'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
+     ARRAY['Two queen beds', 'Premium linens', 'Mini bar', 'Bathtub', 'City or garden view']),
+
+    ('Executive Suite',
+     'Sophisticated suite with a separate sitting area, ideal for business travelers and discerning guests. Includes a king-size bed and executive workspace.',
+     9500.00, 3, 5,
+     'https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1200&q=80',
+     ARRAY['King-size bed', 'Separate sitting area', 'Executive desk', 'Premium toiletries', 'Espresso machine', 'Bathtub']),
+
+    ('Premium Room',
+     'Our top-tier room category featuring the finest furnishings, plush bedding, and a serene atmosphere for an unforgettable stay.',
+     7500.00, 2, 5,
      'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80',
-     ARRAY['Master bedroom', 'Living room', 'Dining nook', 'Private terrace', 'Ocean view', 'Premium toiletries']);
+     ARRAY['King-size bed', 'Plush bedding', 'Rain shower', 'Mini bar', 'Premium view']),
+
+    ('Family Room',
+     'Thoughtfully designed for families. Two bedrooms, a shared living space, and child-friendly amenities ensure a relaxing stay for all ages.',
+     8800.00, 5, 5,
+     'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80',
+     ARRAY['Two bedrooms', 'Living area', 'Family bathroom', 'Mini fridge', 'Smart TV', 'Garden view']);
 
 -- Bookings ----------------------------------------------------
 INSERT INTO "bookings" ("user_id", "room_id", "check_in", "check_out", "guest_count", "special_requests", "status", "decided_at") VALUES
@@ -129,19 +147,19 @@ INSERT INTO "bookings" ("user_id", "room_id", "check_in", "check_out", "guest_co
      'approved', NOW()),
 
     ((SELECT id FROM users WHERE email='juan@example.com'),
-     (SELECT id FROM rooms WHERE name='Family Suite'),
+     (SELECT id FROM rooms WHERE name='Family Room'),
      '2026-04-25', '2026-04-28', 4,
      'Need an extra crib for a toddler.',
      'pending', NULL),
 
     ((SELECT id FROM users WHERE email='ana@example.com'),
-     (SELECT id FROM rooms WHERE name='Premier Suite'),
+     (SELECT id FROM rooms WHERE name='Executive Suite'),
      '2026-07-15', '2026-07-20', 2,
-     'Honeymoon celebration.',
+     'Anniversary celebration.',
      'approved', NOW()),
 
     ((SELECT id FROM users WHERE email='ana@example.com'),
-     (SELECT id FROM rooms WHERE name='Standard Room'),
+     (SELECT id FROM rooms WHERE name='Premium Room'),
      '2026-03-05', '2026-03-07', 1,
      NULL,
      'rejected', NOW());
