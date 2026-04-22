@@ -29,11 +29,11 @@ export function Header() {
   const closeMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-black text-white">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <img src={logo} alt="Balar Hotel and Spa" className="h-10 w-auto" />
-          <span className="hidden font-serif text-xl font-bold tracking-tight text-foreground sm:inline-block">
+          <span className="hidden font-serif text-xl font-bold tracking-tight text-white sm:inline-block">
             BALAR iBOOK
           </span>
         </Link>
@@ -82,7 +82,7 @@ export function Header() {
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden p-2 text-foreground"
+          className="md:hidden p-2 text-white"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -91,7 +91,7 @@ export function Header() {
 
       {/* Mobile Nav */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-b bg-background px-4 py-4 shadow-lg animate-in slide-in-from-top-4">
+        <div className="md:hidden border-b border-primary/20 bg-black text-white px-4 py-4 shadow-lg animate-in slide-in-from-top-4">
           <nav className="flex flex-col gap-4">
             <Link href="/" onClick={closeMenu} className="text-sm font-medium transition-colors hover:text-primary">
               Home

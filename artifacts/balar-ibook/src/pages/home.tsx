@@ -34,7 +34,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col w-full bg-[#fbf7ee]">
+    <div className="flex flex-col w-full bg-white">
       {/* Hero Section */}
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -72,17 +72,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Section — dark frame */}
-      <section className="py-24 bg-black text-white">
+      {/* About Section — framed white panel */}
+      <section className="py-20 bg-white">
         <div className="container px-4">
-          <div className="mx-auto max-w-5xl border border-primary/30 bg-neutral-950 p-10 md:p-16 shadow-2xl">
+          <div className="mx-auto max-w-5xl border-2 border-primary/40 bg-white p-10 md:p-14 shadow-md">
             <div className="text-center">
               <Sparkles className="w-8 h-8 text-primary mx-auto mb-4" />
-              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-primary">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-foreground">
                 Welcome to Paradise
               </h2>
               <div className="w-16 h-[2px] bg-primary mx-auto mb-8" />
-              <p className="text-gray-300 leading-relaxed text-lg max-w-3xl mx-auto">
+              <p className="text-muted-foreground leading-relaxed text-lg max-w-3xl mx-auto">
                 Nestled along the pristine coastline of Boac, Balar Hotel & Spa
                 offers an unparalleled escape from the everyday. Our
                 meticulously designed rooms and world-class amenities ensure a
@@ -98,12 +98,12 @@ export default function Home() {
                 ].map((stat) => (
                   <div
                     key={stat.label}
-                    className="border border-primary/20 bg-black/40 p-4"
+                    className="border border-primary/30 bg-primary/5 p-4"
                   >
                     <div className="text-3xl font-serif font-bold text-primary">
                       {stat.value}
                     </div>
-                    <div className="text-xs uppercase tracking-widest text-gray-400 mt-1">
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1">
                       {stat.label}
                     </div>
                   </div>
@@ -114,10 +114,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Rooms Showcase — cream framed panel */}
-      <section id="rooms" className="py-24 bg-[#fbf7ee]">
+      {/* Rooms Showcase — framed white panel */}
+      <section id="rooms" className="py-20 bg-white">
         <div className="container px-4">
-          <div className="mx-auto max-w-7xl border-2 border-primary/30 bg-white p-8 md:p-12 shadow-lg">
+          <div className="mx-auto max-w-7xl border-2 border-primary/40 bg-white p-8 md:p-12 shadow-md">
             <div className="text-center mb-12">
               <span className="inline-block uppercase tracking-[0.4em] text-primary text-xs mb-3">
                 Stay
@@ -246,100 +246,102 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Amenities Section — yellow tinted band with dark cards */}
-      <section className="py-24 bg-[#1a1a1a] text-white">
+      {/* Amenities Section — framed white panel */}
+      <section className="py-20 bg-white">
         <div className="container px-4">
-          <div className="text-center mb-14">
-            <span className="inline-block uppercase tracking-[0.4em] text-primary text-xs mb-3">
-              Comfort
-            </span>
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-primary">
-              World-Class Amenities
-            </h2>
-            <div className="w-16 h-[2px] bg-primary mx-auto mb-4" />
-            <p className="text-gray-400">
-              Everything you need for an unforgettable stay.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {[
-              { icon: Waves, title: "Infinity Pool", desc: "Ocean views" },
-              { icon: Star, title: "Luxury Spa", desc: "Rejuvenating treatments" },
-              { icon: Coffee, title: "Fine Dining", desc: "Local & international cuisine" },
-              { icon: Wifi, title: "High-Speed WiFi", desc: "Complimentary access" },
-            ].map((amenity, i) => (
-              <div
-                key={i}
-                className="text-center p-8 border border-primary/30 bg-black hover:bg-neutral-900 transition-colors"
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/15 text-primary mb-4 border border-primary/30">
-                  <amenity.icon className="w-8 h-8" />
+          <div className="mx-auto max-w-6xl border-2 border-primary/40 bg-white p-8 md:p-12 shadow-md">
+            <div className="text-center mb-12">
+              <span className="inline-block uppercase tracking-[0.4em] text-primary text-xs mb-3">
+                Comfort
+              </span>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-foreground">
+                World-Class Amenities
+              </h2>
+              <div className="w-16 h-[2px] bg-primary mx-auto mb-4" />
+              <p className="text-muted-foreground">
+                Everything you need for an unforgettable stay.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                { icon: Waves, title: "Infinity Pool", desc: "Ocean views" },
+                { icon: Star, title: "Luxury Spa", desc: "Rejuvenating treatments" },
+                { icon: Coffee, title: "Fine Dining", desc: "Local & international cuisine" },
+                { icon: Wifi, title: "High-Speed WiFi", desc: "Complimentary access" },
+              ].map((amenity, i) => (
+                <div
+                  key={i}
+                  className="text-center p-8 border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors"
+                >
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/15 text-primary mb-4 border border-primary/30">
+                    <amenity.icon className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-serif text-lg font-bold mb-2 text-foreground">
+                    {amenity.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">{amenity.desc}</p>
                 </div>
-                <h3 className="font-serif text-lg font-bold mb-2 text-primary">
-                  {amenity.title}
-                </h3>
-                <p className="text-sm text-gray-400">{amenity.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Location Section — cream framed against dark */}
-      <section className="py-24 bg-[#fbf7ee]">
+      {/* Location Section — framed white panel */}
+      <section className="py-20 bg-white">
         <div className="container px-4">
-          <div className="mx-auto max-w-6xl border-2 border-primary/30 bg-black text-white p-8 md:p-12 shadow-2xl">
+          <div className="mx-auto max-w-6xl border-2 border-primary/40 bg-white p-8 md:p-12 shadow-md">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <span className="inline-block uppercase tracking-[0.4em] text-primary text-xs mb-3">
                   Visit
                 </span>
-                <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-primary">
+                <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-foreground">
                   Find Us
                 </h2>
                 <div className="w-16 h-[2px] bg-primary mb-6" />
-                <p className="text-gray-300 mb-8 text-lg">
+                <p className="text-muted-foreground mb-8 text-lg">
                   Located in the heart of Boac, Marinduque, Balar Hotel is
                   easily accessible while offering a secluded atmosphere away
                   from the bustle.
                 </p>
-                <div className="space-y-5">
-                  <div className="flex items-start border border-primary/20 bg-neutral-950 p-4">
+                <div className="space-y-4">
+                  <div className="flex items-start border border-primary/30 bg-primary/5 p-4">
                     <MapPin className="w-6 h-6 text-primary mr-4 mt-1 flex-shrink-0" />
                     <div>
-                      <h4 className="font-bold text-base text-primary">
+                      <h4 className="font-bold text-base text-foreground">
                         Address
                       </h4>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Boac, Marinduque, Philippines
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start border border-primary/20 bg-neutral-950 p-4">
+                  <div className="flex items-start border border-primary/30 bg-primary/5 p-4">
                     <Phone className="w-6 h-6 text-primary mr-4 mt-1 flex-shrink-0" />
                     <div>
-                      <h4 className="font-bold text-base text-primary">
+                      <h4 className="font-bold text-base text-foreground">
                         Phone
                       </h4>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         +63 (123) 456-7890
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start border border-primary/20 bg-neutral-950 p-4">
+                  <div className="flex items-start border border-primary/30 bg-primary/5 p-4">
                     <Mail className="w-6 h-6 text-primary mr-4 mt-1 flex-shrink-0" />
                     <div>
-                      <h4 className="font-bold text-base text-primary">
+                      <h4 className="font-bold text-base text-foreground">
                         Email
                       </h4>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         info@balarhotel.com
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="h-96 overflow-hidden border border-primary/30">
+              <div className="h-96 overflow-hidden border-2 border-primary/30">
                 <div className="w-full h-full flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000')] bg-cover bg-center">
                   <div className="bg-black/85 p-6 backdrop-blur text-center border border-primary/40">
                     <MapPin className="w-12 h-12 text-primary mx-auto mb-2" />
