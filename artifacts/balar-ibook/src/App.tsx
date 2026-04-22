@@ -57,15 +57,24 @@ function Router() {
     <Switch>
       {/* Admin Routes */}
       <Route path="/admin/login" component={AdminLogin} />
-      <Route path="/admin" nest>
+      <Route path="/admin">
         <AdminLayout>
-          <Switch>
-            <Route path="/" component={() => <ProtectedRoute component={AdminDashboard} adminOnly />} />
-            <Route path="/bookings" component={() => <ProtectedRoute component={AdminBookings} adminOnly />} />
-            <Route path="/rooms" component={() => <ProtectedRoute component={AdminRooms} adminOnly />} />
-            <Route path="/users" component={() => <ProtectedRoute component={AdminUsers} adminOnly />} />
-            <Route component={NotFound} />
-          </Switch>
+          <ProtectedRoute component={AdminDashboard} adminOnly />
+        </AdminLayout>
+      </Route>
+      <Route path="/admin/bookings">
+        <AdminLayout>
+          <ProtectedRoute component={AdminBookings} adminOnly />
+        </AdminLayout>
+      </Route>
+      <Route path="/admin/rooms">
+        <AdminLayout>
+          <ProtectedRoute component={AdminRooms} adminOnly />
+        </AdminLayout>
+      </Route>
+      <Route path="/admin/users">
+        <AdminLayout>
+          <ProtectedRoute component={AdminUsers} adminOnly />
         </AdminLayout>
       </Route>
 
