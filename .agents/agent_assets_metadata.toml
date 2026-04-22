@@ -1,0 +1,56 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "oYgF7Rryo4zyHBc3o17AG"
+uri = "file://artifacts/balar-ibook/public/hero.png"
+type = "image"
+title = "hero banner golden hour hotel"
+
+[[generated]]
+id = "0IgkOv23JFhIjqvusX3oN"
+uri = "file://artifacts/balar-ibook/public/room-1.png"
+type = "image"
+title = "luxury standard hotel room"
+
+[[generated]]
+id = "-3S4MwEOjDCg63g-QW-EP"
+uri = "file://artifacts/balar-ibook/public/room-2.png"
+type = "image"
+title = "luxury suite hotel room"
+
+[[generated]]
+id = "7_EKdQ0w_MfMsP7x95xld"
+uri = "file://artifacts/balar-ibook/public/room-3.png"
+type = "image"
+title = "tropical pool area golden hour"
+
+[[generated]]
+id = "H0QwLRG1xXouNACmoshEm"
+uri = "file://artifacts/balar-ibook/public/images/room-1.png"
+type = "image"
+title = "Tropical hotel king bed white linens"
+
+[[generated]]
+id = "vRk2hG43LkKIWqArmUfgy"
+uri = "file://artifacts/balar-ibook/public/images/room-2.png"
+type = "image"
+title = "Hotel pool golden hour luxury"
+
+[[generated]]
+id = "8923aSQkhwIUnmAqmYVTM"
+uri = "file://artifacts/balar-ibook/public/images/room-3.png"
+type = "image"
+title = "Hotel lobby with gold accents"
+
+[[generated]]
+id = "x-yuTSpMydVnc5eDRCnJV"
+uri = "file://artifacts/balar-ibook/public/images/room-4.png"
+type = "image"
+title = "Ocean view suite balcony"
+
+[[generated]]
+id = "RawZDh5vBnF0ZBN8nThM6"
+uri = "file://artifacts/balar-ibook/public/images/hero-bg.png"
+type = "image"
+title = "Stunning hotel exterior golden hour"

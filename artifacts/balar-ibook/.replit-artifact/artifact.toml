@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Balar iBOOK"
+version = "1.0.0"
+id = "artifacts/balar-ibook"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19528
+
+[services.development]
+run = "pnpm --filter @workspace/balar-ibook run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/balar-ibook", "run", "build" ]
+publicDir = "artifacts/balar-ibook/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19528"
+BASE_PATH = "/"

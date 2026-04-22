@@ -1,0 +1,107 @@
+
+Website Name: Balar iBOOK
+Logo: (the logo is attached; balar_logo)
+Color palette: Black, gold, white, shades of yellow
+Framework; React 
+Backend; Node.js
+
+Note:
+Include an .sql file for database schema and sample seed data
+
+FINAL SYSTEM FLOW – BALAR iBOOK
+1. Website Access
+•	User clicks the website link
+•	System loads the Homepage
+
+2. Homepage (Guest + Admin Entry)
+ Guest View
+•	View hotel details
+•	View available room types:
+o	Description
+o	Price
+o	Capacity
+o	Occupancy (e.g., 0/5, 5/5)
+ Rule:
+•	If room is 5/5 (full):
+o	Booking button is disabled / not clickable
+
+ Admin Access
+•	Homepage includes “Admin Login” button (separate section)
+
+3. Room Selection (Guest)
+•	Guest selects:
+o	Room type
+o	Check-in date
+o	Check-out date
+Important din po to
+•	Booking comes FIRST before login/register
+
+4. Login / Registration (After Selection)
+After room selection, the user may be prompted to:
+•	Button 1: Sign In (if the guest had an account but not yet signed in) 
+•	Button 2: Register (if the guest doesn’t have an account yet)
+Required Inputs:
+•	Full Name
+•	Email Address
+•	Contact Number
+•	Password 
+•	Confirm Password (for account registration)
+
+5. Input Validation (Important po to)
+Before submission, system checks:
+Email Validation
+•	Must be correct format (e.g., name@email.com)
+•	If invalid:
+o	Show red error message
+o	 Cannot proceed
+
+Password Validation
+•	Must:
+o	Meet minimum length
+o	Include special character (e.g., #)
+•	If invalid:
+o	Show error message
+o	Cannot proceed
+
+ Required Fields
+•	If not all fields are complete;
+o	Show: “Please fill out all fields”
+
+6. Booking Submission
+•	If all inputs are valid:
+o	Booking is saved
+o	Status = Pending
+Guest receives:
+•	Email (Booking Pending Confirmation)
+
+7. Admin Process
+Step 1: Admin Login
+•	Access via homepage
+Step 2: Dashboard
+•	Admin can view:
+o	Guest details
+o	Booking info
+o	Room selected
+o	Dates
+
+8. Booking Decision
+•	Admin chooses:
+o	 Approve
+o	Reject
+
+9. Final Email Notification
+•	If Approved:
+o	Send Confirmation Email
+•	If Rejected:
+o	Send Rejection Email (recommended)
+
+1.	Homepage
+2.	View rooms with occupancy
+3.	Select room + dates
+4.	Login/Register
+5.	Validate inputs (email, password)
+6.	Submit booking → Pending
+7.	Admin reviews booking
+8.	Admin approves/rejects
+9.	System sends final email
+

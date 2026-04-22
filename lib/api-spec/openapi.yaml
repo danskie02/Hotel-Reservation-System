@@ -3,34 +3,451 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Balar iBOOK API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: rooms
+  - name: bookings
+  - name: admin
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
           content:
             application/json:
+              schema: { $ref: "#/components/schemas/HealthStatus" }
+
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags: [auth]
+      summary: Register a guest account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegisterBody" }
+      responses:
+        "200":
+          description: Registered
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthResponse" }
+  /auth/login:
+    post:
+      operationId: loginUser
+      tags: [auth]
+      summary: Login as guest or admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginBody" }
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthResponse" }
+  /auth/logout:
+    post:
+      operationId: logoutUser
+      tags: [auth]
+      summary: Log out
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OkResponse" }
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Current logged-in user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MeResponse" }
+
+  /rooms:
+    get:
+      operationId: listRooms
+      tags: [rooms]
+      summary: List room types with occupancy
+      responses:
+        "200":
+          description: Rooms
+          content:
+            application/json:
               schema:
-                $ref: "#/components/schemas/HealthStatus"
+                type: array
+                items: { $ref: "#/components/schemas/Room" }
+  /rooms/{id}:
+    get:
+      operationId: getRoom
+      tags: [rooms]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Room
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Room" }
+
+  /bookings:
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Submit a booking request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateBookingBody" }
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Booking" }
+  /bookings/mine:
+    get:
+      operationId: listMyBookings
+      tags: [bookings]
+      summary: Bookings for the current guest
+      responses:
+        "200":
+          description: My bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Booking" }
+
+  /admin/bookings:
+    get:
+      operationId: adminListBookings
+      tags: [admin]
+      summary: List all bookings (admin)
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, approved, rejected, all]
+      responses:
+        "200":
+          description: All bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Booking" }
+  /admin/bookings/{id}/decision:
+    post:
+      operationId: adminDecideBooking
+      tags: [admin]
+      summary: Approve or reject a booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DecisionBody" }
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Booking" }
+
+  /admin/rooms:
+    get:
+      operationId: adminListRooms
+      tags: [admin]
+      responses:
+        "200":
+          description: Rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Room" }
+    post:
+      operationId: adminCreateRoom
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateRoomBody" }
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Room" }
+  /admin/rooms/{id}:
+    patch:
+      operationId: adminUpdateRoom
+      tags: [admin]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateRoomBody" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Room" }
+
+  /admin/users:
+    get:
+      operationId: adminListUsers
+      tags: [admin]
+      responses:
+        "200":
+          description: Users
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/UserSummary" }
+
+  /admin/stats:
+    get:
+      operationId: adminStats
+      tags: [admin]
+      summary: Dashboard summary stats
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminStats" }
+
+  /admin/occupancy:
+    get:
+      operationId: adminOccupancyReport
+      tags: [admin]
+      summary: Occupancy by room type
+      responses:
+        "200":
+          description: Occupancy
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/OccupancyRow" }
+
+  /admin/recent-activity:
+    get:
+      operationId: adminRecentActivity
+      tags: [admin]
+      summary: Recent bookings activity
+      responses:
+        "200":
+          description: Recent activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Booking" }
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
-        status:
-          type: string
-      required:
-        - status
+        status: { type: string }
+    OkResponse:
+      type: object
+      required: [ok]
+      properties:
+        ok: { type: boolean }
 
+    RegisterBody:
+      type: object
+      required: [fullName, email, contactNumber, password, confirmPassword]
+      properties:
+        fullName: { type: string, minLength: 1 }
+        email: { type: string, format: email }
+        contactNumber: { type: string, minLength: 1 }
+        password: { type: string, minLength: 8 }
+        confirmPassword: { type: string, minLength: 8 }
+    LoginBody:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 1 }
+    AuthResponse:
+      type: object
+      required: [user]
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+    MeResponse:
+      type: object
+      properties:
+        user:
+          oneOf:
+            - { $ref: "#/components/schemas/User" }
+            - { type: "null" }
+      required: [user]
+
+    User:
+      type: object
+      required: [id, fullName, email, contactNumber, role, createdAt]
+      properties:
+        id: { type: integer }
+        fullName: { type: string }
+        email: { type: string }
+        contactNumber: { type: string }
+        role: { type: string, enum: [guest, admin] }
+        createdAt: { type: string }
+    UserSummary:
+      type: object
+      required: [id, fullName, email, contactNumber, role, createdAt, bookingCount]
+      properties:
+        id: { type: integer }
+        fullName: { type: string }
+        email: { type: string }
+        contactNumber: { type: string }
+        role: { type: string, enum: [guest, admin] }
+        createdAt: { type: string }
+        bookingCount: { type: integer }
+
+    Room:
+      type: object
+      required: [id, name, description, price, capacity, totalUnits, currentOccupied, imageUrl, features]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        price: { type: number }
+        capacity: { type: integer }
+        totalUnits: { type: integer }
+        currentOccupied: { type: integer }
+        imageUrl: { type: string }
+        features:
+          type: array
+          items: { type: string }
+
+    CreateRoomBody:
+      type: object
+      required: [name, description, price, capacity, totalUnits, imageUrl, features]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        price: { type: number }
+        capacity: { type: integer }
+        totalUnits: { type: integer }
+        imageUrl: { type: string }
+        features:
+          type: array
+          items: { type: string }
+    UpdateRoomBody:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        price: { type: number }
+        capacity: { type: integer }
+        totalUnits: { type: integer }
+        imageUrl: { type: string }
+        features:
+          type: array
+          items: { type: string }
+
+    CreateBookingBody:
+      type: object
+      required: [roomId, checkIn, checkOut, guestCount]
+      properties:
+        roomId: { type: integer }
+        checkIn: { type: string, format: date }
+        checkOut: { type: string, format: date }
+        guestCount: { type: integer, minimum: 1 }
+        specialRequests: { type: string }
+    Booking:
+      type: object
+      required: [id, roomId, roomName, userId, guestName, guestEmail, guestContact, checkIn, checkOut, guestCount, status, createdAt]
+      properties:
+        id: { type: integer }
+        roomId: { type: integer }
+        roomName: { type: string }
+        userId: { type: integer }
+        guestName: { type: string }
+        guestEmail: { type: string }
+        guestContact: { type: string }
+        checkIn: { type: string }
+        checkOut: { type: string }
+        guestCount: { type: integer }
+        specialRequests:
+          oneOf:
+            - { type: string }
+            - { type: "null" }
+        status: { type: string, enum: [pending, approved, rejected] }
+        createdAt: { type: string }
+        decidedAt:
+          oneOf:
+            - { type: string }
+            - { type: "null" }
+
+    DecisionBody:
+      type: object
+      required: [decision]
+      properties:
+        decision: { type: string, enum: [approve, reject] }
+        note: { type: string }
+
+    AdminStats:
+      type: object
+      required: [totalBookings, pendingBookings, approvedBookings, rejectedBookings, totalGuests, totalRooms, occupiedUnits, totalUnits]
+      properties:
+        totalBookings: { type: integer }
+        pendingBookings: { type: integer }
+        approvedBookings: { type: integer }
+        rejectedBookings: { type: integer }
+        totalGuests: { type: integer }
+        totalRooms: { type: integer }
+        occupiedUnits: { type: integer }
+        totalUnits: { type: integer }
+
+    OccupancyRow:
+      type: object
+      required: [roomId, roomName, totalUnits, occupied, available]
+      properties:
+        roomId: { type: integer }
+        roomName: { type: string }
+        totalUnits: { type: integer }
+        occupied: { type: integer }
+        available: { type: integer }
