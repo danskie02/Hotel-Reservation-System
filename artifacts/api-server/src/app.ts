@@ -1,10 +1,12 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import session from "express-session";
+import pgSession from "connect-pg-simple";
 import pinoHttp from "pino-http";
 import path from "path";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { pool } from "@workspace/db";
 
 const app: Express = express();
 
@@ -40,8 +42,14 @@ if (!sessionSecret) {
   throw new Error("SESSION_SECRET environment variable is required");
 }
 
+const PostgresqlStore = pgSession(session);
+
 app.use(
   session({
+    store: new PostgresqlStore({
+      pool,
+      tableName: "session",
+    }),
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
