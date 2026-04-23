@@ -14,6 +14,14 @@ import room4 from "/images/room-4.png";
 const fallbackImages = [room1, room2, room3, room4];
 
 export default function MyBookings() {
+  const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
+  const resolveImageUrl = (url: string) => {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    if (url.startsWith("/")) return apiBaseUrl ? `${apiBaseUrl}${url}` : url;
+    return url;
+  };
+
   const { data: bookings = [], isLoading } = useListMyBookings({ query: { queryKey: getListMyBookingsQueryKey() } });
 
   const getStatusColor = (status: string) => {
@@ -58,7 +66,8 @@ export default function MyBookings() {
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {bookings.map((booking, index) => {
-            const img = booking.roomImage || fallbackImages[index % fallbackImages.length];
+            const fallbackImage = fallbackImages[index % fallbackImages.length];
+            const img = booking.roomImage ? resolveImageUrl(booking.roomImage) : fallbackImage;
             return (
               <motion.div
                 key={booking.id}
@@ -73,6 +82,10 @@ export default function MyBookings() {
                       <img
                         src={img}
                         alt={booking.roomName}
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = fallbackImage;
+                        }}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <Badge className={`absolute top-4 left-4 text-sm font-semibold shadow-md ${getStatusColor(booking.status)}`} variant="outline">
