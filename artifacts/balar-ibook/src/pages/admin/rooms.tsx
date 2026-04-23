@@ -24,6 +24,15 @@ const roomSchema = z.object({
 });
 
 export default function AdminRooms() {
+  const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
+  const buildApiUrl = (apiPath: string) => (apiBaseUrl ? `${apiBaseUrl}${apiPath}` : apiPath);
+  const resolveImageUrl = (url: string) => {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    if (url.startsWith("/")) return apiBaseUrl ? `${apiBaseUrl}${url}` : url;
+    return url;
+  };
+
   const { data: rooms = [], isLoading } = useAdminListRooms({ query: { queryKey: getAdminListRoomsQueryKey() } });
   const [editingRoom, setEditingRoom] = useState<any | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -62,7 +71,7 @@ export default function AdminRooms() {
       featuresString: room.features.join(", "),
     });
     setImageFile(null);
-    setImagePreview(room.imageUrl || "");
+    setImagePreview(resolveImageUrl(room.imageUrl || ""));
     setIsDialogOpen(true);
   };
 
@@ -74,7 +83,7 @@ export default function AdminRooms() {
       setImagePreview(objectUrl);
       return;
     }
-    setImagePreview(editingRoom?.imageUrl || "");
+    setImagePreview(resolveImageUrl(editingRoom?.imageUrl || ""));
   };
 
   const uploadImageIfNeeded = async (): Promise<string> => {
@@ -85,11 +94,15 @@ export default function AdminRooms() {
 
     setIsUploadingImage(true);
     try {
-      const response = await fetch("/api/admin/uploads/room-image", {
+      const response = await fetch(buildApiUrl("/api/admin/uploads/room-image"), {
         method: "POST",
         credentials: "include",
         body: formData,
       });
+      const contentType = response.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        throw new Error("Image upload did not reach API server. Check VITE_API_URL and Render routing.");
+      }
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || "Failed to upload image");
@@ -151,7 +164,7 @@ export default function AdminRooms() {
             <Card key={room.id} className="overflow-hidden flex flex-col border-primary/20 bg-white shadow-sm">
               <div className="h-44 bg-neutral-100 relative">
                 {room.imageUrl ? (
-                  <img src={room.imageUrl} alt={room.name} className="w-full h-full object-cover" />
+                  <img src={resolveImageUrl(room.imageUrl)} alt={room.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-neutral-400">
                     <Settings2 className="h-12 w-12" />
