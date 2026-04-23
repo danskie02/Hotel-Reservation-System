@@ -39,17 +39,22 @@ export default function Login() {
         return;
       }
       
-      // Invalidate and refetch current user data to ensure it's fresh before redirecting
+      // Invalidate and wait for refetch to complete
+      console.log("Invalidating and refetching current user...");
       await queryClient.invalidateQueries({ queryKey: getGetCurrentUserQueryKey() });
-      await queryClient.refetchQueries({ queryKey: getGetCurrentUserQueryKey() });
+      const refetchResult = await queryClient.refetchQueries({ queryKey: getGetCurrentUserQueryKey() });
+      console.log("Refetch result:", refetchResult);
+      
+      // Check the cached data
+      const cachedData = queryClient.getQueryData(getGetCurrentUserQueryKey());
+      console.log("Cached user data:", cachedData);
+      
       toast({ description: "Welcome back!" });
       
       console.log("User role:", res.user.role);
       const redirectPath = res.user.role === "admin" ? "/admin" : "/my-bookings";
       console.log("Redirecting to:", redirectPath);
-      
-      // Use setTimeout to ensure state updates complete
-      setTimeout(() => setLocation(redirectPath), 100);
+      setLocation(redirectPath);
     } catch (error: any) {
       console.error("Login error:", error);
       form.setError("root", { message: "Invalid email or password" });

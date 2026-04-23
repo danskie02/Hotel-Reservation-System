@@ -49,7 +49,12 @@ app.use(
   }),
 );
 app.set("trust proxy", 1);
-app.use(cors({ credentials: true }));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || (process.env.NODE_ENV !== "production" ? "http://localhost:5173" : true),
+    credentials: true,
+  }),
+);
 app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
