@@ -54,6 +54,14 @@ const registerSchema = z.object({
 });
 
 export default function Book() {
+  const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
+  const resolveImageUrl = (url: string) => {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    if (url.startsWith("/")) return apiBaseUrl ? `${apiBaseUrl}${url}` : url;
+    return url;
+  };
+
   const { roomId } = useParams();
   const roomIdNum = parseInt(roomId || "0", 10);
   const [_, setLocation] = useLocation();
@@ -148,7 +156,8 @@ export default function Book() {
     );
   }
 
-  const img = room.imageUrl || fallbackImages[room.id % fallbackImages.length];
+  const fallbackImage = fallbackImages[room.id % fallbackImages.length];
+  const img = room.imageUrl ? resolveImageUrl(room.imageUrl) : fallbackImage;
 
   const onSubmitBooking = async (data: z.infer<typeof bookingSchema>) => {
     if (!user) return; // Handled by UI
@@ -498,6 +507,10 @@ export default function Book() {
               <img 
                 src={img} 
                 alt={room.name} 
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = fallbackImage;
+                }}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
               />
               <div className="absolute top-4 right-4 bg-black text-primary px-4 py-2 font-semibold shadow-md border border-primary/40">

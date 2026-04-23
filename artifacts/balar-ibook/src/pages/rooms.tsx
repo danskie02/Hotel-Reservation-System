@@ -13,6 +13,14 @@ import room4 from "/images/room-4.png";
 const fallbackImages = [room1, room2, room3, room4];
 
 export default function Rooms() {
+  const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
+  const resolveImageUrl = (url: string) => {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    if (url.startsWith("/")) return apiBaseUrl ? `${apiBaseUrl}${url}` : url;
+    return url;
+  };
+
   const { data: rooms = [], isLoading } = useListRooms({
     query: { queryKey: getListRoomsQueryKey() },
   });
@@ -70,9 +78,8 @@ export default function Rooms() {
                 const isFullyBooked = room.currentOccupied >= room.totalUnits;
                 const percentOccupied =
                   (room.currentOccupied / room.totalUnits) * 100;
-                const img =
-                  room.imageUrl ||
-                  fallbackImages[index % fallbackImages.length];
+                const fallbackImage = fallbackImages[index % fallbackImages.length];
+                const img = room.imageUrl ? resolveImageUrl(room.imageUrl) : fallbackImage;
 
                 return (
                   <motion.div
@@ -86,6 +93,10 @@ export default function Rooms() {
                         <img
                           src={img}
                           alt={room.name}
+                          onError={(event) => {
+                            event.currentTarget.onerror = null;
+                            event.currentTarget.src = fallbackImage;
+                          }}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute top-4 right-4 bg-black text-primary px-4 py-2 font-semibold shadow-md border border-primary/40">
