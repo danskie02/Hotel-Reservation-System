@@ -5,7 +5,7 @@ import { Menu, X, LogOut, User as UserIcon } from "lucide-react";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@assets/balar_logo_1776822257809.png";
+import logo from "@assets/balar_logo_black.png";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -30,10 +30,10 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-black text-white">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <img src={logo} alt="Balar Hotel and Spa" className="h-10 w-auto" />
-          <span className="hidden font-serif text-xl font-bold tracking-tight text-white sm:inline-block">
+          <span className="hidden font-serif text-l font-bold tracking-tight text-yellow-500 sm:inline-block">
             BALAR iBOOK
           </span>
         </Link>
@@ -46,7 +46,7 @@ export function Header() {
           <Link href="/rooms" className="text-sm font-medium transition-colors hover:text-primary">
             Rooms
           </Link>
-          
+
           {user ? (
             <>
               {user.role === "admin" ? (

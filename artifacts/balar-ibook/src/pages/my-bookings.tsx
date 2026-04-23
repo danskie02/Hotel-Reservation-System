@@ -2,19 +2,26 @@ import { useListMyBookings, getListMyBookingsQueryKey } from "@workspace/api-cli
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, Home } from "lucide-react";
+import { Calendar, Users, Home, MapPin, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import room1 from "/images/room-1.png";
+import room2 from "/images/room-2.png";
+import room3 from "/images/room-3.png";
+import room4 from "/images/room-4.png";
+
+const fallbackImages = [room1, room2, room3, room4];
 
 export default function MyBookings() {
   const { data: bookings = [], isLoading } = useListMyBookings({ query: { queryKey: getListMyBookingsQueryKey() } });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "approved": return "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400";
-      case "rejected": return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400";
-      case "pending": return "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
+      case "approved": return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      case "rejected": return "bg-rose-50 text-rose-700 border-rose-200";
+      case "pending": return "bg-amber-50 text-amber-700 border-amber-200";
+      default: return "bg-gray-50 text-gray-700 border-gray-200";
     }
   };
 
@@ -27,20 +34,20 @@ export default function MyBookings() {
   }
 
   return (
-    <div className="container max-w-5xl py-12 px-4 min-h-screen">
-      <div className="mb-10">
-        <h1 className="text-4xl font-serif font-bold mb-2">My Bookings</h1>
-        <p className="text-muted-foreground text-lg">Manage and view your reservation history.</p>
+    <div className="container max-w-6xl py-12 px-4 min-h-screen bg-white">
+      <div className="mb-12">
+        <h1 className="text-4xl font-serif font-bold mb-2 text-neutral-900">My Bookings</h1>
+        <p className="text-neutral-600 text-lg">Manage and view your reservation history.</p>
       </div>
 
       {bookings.length === 0 ? (
-        <Card className="text-center py-16 border-dashed">
+        <Card className="text-center py-16 border-dashed border-2">
           <CardContent className="flex flex-col items-center">
-            <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mb-4">
-              <Calendar className="w-8 h-8 text-muted-foreground" />
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <Calendar className="w-8 h-8 text-primary" />
             </div>
-            <h3 className="text-2xl font-serif font-bold mb-2">No bookings yet</h3>
-            <p className="text-muted-foreground mb-6 max-w-sm">
+            <h3 className="text-2xl font-serif font-bold mb-2 text-neutral-900">No bookings yet</h3>
+            <p className="text-neutral-600 mb-6 max-w-sm">
               You haven't made any reservations. Discover our elegant rooms and book your stay today.
             </p>
             <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
@@ -49,64 +56,112 @@ export default function MyBookings() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-6">
-          {bookings.map((booking) => (
-            <Card key={booking.id} className="overflow-hidden border-none shadow-md">
-              <div className="flex flex-col md:flex-row">
-                <div className="bg-secondary/40 p-6 md:w-1/3 flex flex-col justify-center border-b md:border-b-0 md:border-r">
-                  <Badge className={`w-fit mb-4 text-sm font-medium ${getStatusColor(booking.status)}`} variant="outline">
-                    {getStatusLabel(booking.status)}
-                  </Badge>
-                  <h3 className="text-2xl font-serif font-bold mb-2">{booking.roomName}</h3>
-                  <div className="text-sm text-muted-foreground mb-1">
-                    Booking Ref: #{booking.id.toString().padStart(4, '0')}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Requested on {format(new Date(booking.createdAt), "MMM d, yyyy")}
-                  </div>
-                </div>
-                
-                <div className="p-6 md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <div className="text-sm text-muted-foreground mb-1 flex items-center">
-                        <Calendar className="w-4 h-4 mr-2" /> Stay Dates
-                      </div>
-                      <div className="font-medium">
-                        {format(new Date(booking.checkIn), "MMM d")} - {format(new Date(booking.checkOut), "MMM d, yyyy")}
-                      </div>
+        <div className="grid grid-cols-1 gap-6">
+          {bookings.map((booking, index) => {
+            const img = booking.roomImage || fallbackImages[index % fallbackImages.length];
+            return (
+              <motion.div
+                key={booking.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+              >
+                <Card className="overflow-hidden border-2 border-primary/20 shadow-md hover:shadow-lg hover:border-primary/40 transition-all group">
+                  <div className="grid md:grid-cols-[1fr_2fr] gap-0">
+                    {/* Image Section */}
+                    <div className="relative h-64 md:h-auto overflow-hidden bg-neutral-100">
+                      <img
+                        src={img}
+                        alt={booking.roomName}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <Badge className={`absolute top-4 left-4 text-sm font-semibold shadow-md ${getStatusColor(booking.status)}`} variant="outline">
+                        {getStatusLabel(booking.status)}
+                      </Badge>
                     </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground mb-1 flex items-center">
-                        <Users className="w-4 h-4 mr-2" /> Guests
-                      </div>
-                      <div className="font-medium">{booking.guestCount} {booking.guestCount === 1 ? 'Person' : 'People'}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {booking.specialRequests && (
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">Special Requests</div>
-                        <div className="text-sm italic text-foreground/80 bg-secondary/20 p-3 rounded-md">
-                          "{booking.specialRequests}"
+
+                    {/* Content Section */}
+                    <div className="p-6 flex flex-col">
+                      <div className="mb-6">
+                        <h3 className="text-2xl md:text-3xl font-serif font-bold text-neutral-900 mb-2">{booking.roomName}</h3>
+                        <div className="flex items-center gap-4 text-sm text-neutral-600">
+                          <div>Booking Ref: <span className="font-semibold text-primary">#{booking.id.toString().padStart(4, '0')}</span></div>
+                          <div>Requested on {format(new Date(booking.createdAt), "MMM d, yyyy")}</div>
                         </div>
                       </div>
-                    )}
-                    
-                    {booking.decidedAt && (
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">Decision Date</div>
-                        <div className="font-medium text-sm">
-                          {format(new Date(booking.decidedAt), "MMM d, yyyy 'at' h:mm a")}
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 pb-6 border-b border-primary/10">
+                        {/* Stay Dates */}
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-neutral-600 uppercase tracking-wide">Check-in</p>
+                            <p className="text-lg font-bold text-neutral-900">{format(new Date(booking.checkIn), "MMM d, yyyy")}</p>
+                          </div>
+                        </div>
+
+                        {/* Checkout Date */}
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <Clock className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-neutral-600 uppercase tracking-wide">Check-out</p>
+                            <p className="text-lg font-bold text-neutral-900">{format(new Date(booking.checkOut), "MMM d, yyyy")}</p>
+                          </div>
+                        </div>
+
+                        {/* Guest Count */}
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <Users className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-neutral-600 uppercase tracking-wide">Guests</p>
+                            <p className="text-lg font-bold text-neutral-900">{booking.guestCount} {booking.guestCount === 1 ? 'Person' : 'People'}</p>
+                          </div>
+                        </div>
+
+                        {/* Duration */}
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <MapPin className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-neutral-600 uppercase tracking-wide">Duration</p>
+                            <p className="text-lg font-bold text-neutral-900">{Math.ceil((new Date(booking.checkOut).getTime() - new Date(booking.checkIn).getTime()) / (1000 * 60 * 60 * 24))} Night{Math.ceil((new Date(booking.checkOut).getTime() - new Date(booking.checkIn).getTime()) / (1000 * 60 * 60 * 24)) !== 1 ? 's' : ''}</p>
+                          </div>
                         </div>
                       </div>
-                    )}
+
+                      {/* Special Requests and Decision Date */}
+                      <div className="space-y-4">
+                        {booking.specialRequests && (
+                          <div>
+                            <p className="text-sm font-semibold text-neutral-600 uppercase tracking-wide mb-2">Special Requests</p>
+                            <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg text-sm italic text-neutral-700">
+                              "{booking.specialRequests}"
+                            </div>
+                          </div>
+                        )}
+                        
+                        {booking.decidedAt && (
+                          <div>
+                            <p className="text-sm font-semibold text-neutral-600 uppercase tracking-wide mb-2">Decision Date</p>
+                            <p className="text-sm text-neutral-700">
+                              {format(new Date(booking.decidedAt), "EEEE, MMMM d, yyyy 'at' h:mm a")}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </Card>
-          ))}
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </div>

@@ -126,6 +126,7 @@ export interface Booking {
   id: number;
   roomId: number;
   roomName: string;
+  roomImage?: string;
   userId: number;
   guestName: string;
   guestEmail: string;

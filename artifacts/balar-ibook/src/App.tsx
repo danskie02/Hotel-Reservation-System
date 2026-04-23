@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { Layout } from "@/components/layout";
 import { AdminLayout } from "@/components/admin-layout";
-import { useGetCurrentUser } from "@workspace/api-client-react";
+import { useGetCurrentUser, setBaseUrl } from "@workspace/api-client-react";
 
 // Pages
 import Home from "@/pages/home";
@@ -97,6 +97,12 @@ function Router() {
 }
 
 function App() {
+  // Initialize API base URL from environment variable
+  const apiUrl = import.meta.env.VITE_API_URL;
+  if (apiUrl) {
+    setBaseUrl(apiUrl);
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

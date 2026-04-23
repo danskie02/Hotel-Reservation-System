@@ -12,61 +12,57 @@ export default function AdminUsers() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-serif font-bold tracking-tight text-sidebar-foreground">Users</h1>
-        <p className="text-sidebar-foreground/60">View all registered guest and admin accounts.</p>
+        <h1 className="text-3xl font-serif font-bold tracking-tight text-neutral-900">Users</h1>
+        <p className="text-neutral-600">View all registered guest and admin accounts.</p>
       </div>
 
-      <Card className="bg-sidebar border-sidebar-border">
+      <Card className="border-primary/20 bg-white shadow-md overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-sidebar-border hover:bg-transparent">
-                  <TableHead className="text-sidebar-foreground/70">Name</TableHead>
-                  <TableHead className="text-sidebar-foreground/70">Contact</TableHead>
-                  <TableHead className="text-sidebar-foreground/70">Role</TableHead>
-                  <TableHead className="text-right text-sidebar-foreground/70">Bookings</TableHead>
-                  <TableHead className="text-right text-sidebar-foreground/70">Joined</TableHead>
+                <TableRow className="bg-gradient-to-r from-neutral-50 to-neutral-100 border-neutral-200 hover:bg-neutral-100">
+                  <TableHead className="text-neutral-700 font-semibold py-4 px-6">Name</TableHead>
+                  <TableHead className="text-neutral-700 font-semibold py-4 px-6 flex-1">Contact</TableHead>
+                  <TableHead className="text-neutral-700 font-semibold py-4 px-6">Role</TableHead>
+                  <TableHead className="text-right text-neutral-700 font-semibold py-4 px-6">Joined</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center text-sidebar-foreground/50">
+                    <TableCell colSpan={4} className="h-24 text-center text-neutral-500">
                       Loading users...
                     </TableCell>
                   </TableRow>
                 ) : users.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center text-sidebar-foreground/50">
+                    <TableCell colSpan={4} className="h-24 text-center text-neutral-500">
                       No users found.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  users.map((user) => (
-                    <TableRow key={user.id} className="border-sidebar-border hover:bg-sidebar-accent/50">
-                      <TableCell>
-                        <div className="font-medium text-sidebar-foreground">{user.fullName}</div>
+                  users.map((user, index) => (
+                    <TableRow key={user.id} className={`border-neutral-100 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-neutral-50'} hover:bg-primary/5`}>
+                      <TableCell className="py-4 px-6">
+                        <div className="font-medium text-neutral-900">{user.fullName}</div>
                       </TableCell>
-                      <TableCell>
-                        <div className="text-sm text-sidebar-foreground">{user.email}</div>
-                        <div className="text-xs text-sidebar-foreground/60">{user.contactNumber}</div>
+                      <TableCell className="py-4 px-6">
+                        <div className="text-sm text-neutral-900">{user.email}</div>
+                        <div className="text-xs text-neutral-600">{user.contactNumber}</div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="py-4 px-6">
                         {user.role === "admin" ? (
-                          <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30 gap-1">
+                          <Badge variant="outline" className="gap-1 border-primary/30 bg-primary/10 text-primary font-medium">
                             <Shield className="w-3 h-3" /> Admin
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="bg-sidebar-accent text-sidebar-foreground/80 border-sidebar-border gap-1">
+                          <Badge variant="outline" className="gap-1 border-neutral-300 bg-neutral-100 text-neutral-700 font-medium">
                             <User className="w-3 h-3" /> Guest
                           </Badge>
                         )}
                       </TableCell>
-                      <TableCell className="text-right">
-                        <span className="font-medium text-sidebar-foreground">{user.bookingCount}</span>
-                      </TableCell>
-                      <TableCell className="text-right text-sm text-sidebar-foreground/70">
+                      <TableCell className="text-right text-sm text-neutral-600 py-4 px-6">
                         {format(new Date(user.createdAt), "MMM d, yyyy")}
                       </TableCell>
                     </TableRow>

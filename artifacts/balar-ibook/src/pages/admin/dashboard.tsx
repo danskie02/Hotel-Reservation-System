@@ -27,96 +27,96 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8 pb-8">
       <div>
-        <h1 className="text-3xl font-serif font-bold tracking-tight text-sidebar-foreground">Dashboard</h1>
-        <p className="text-sidebar-foreground/60">Overview of hotel operations and reservations.</p>
+        <h1 className="text-3xl font-serif font-bold tracking-tight text-neutral-900">Dashboard</h1>
+        <p className="text-neutral-600">Overview of hotel operations and reservations.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-sidebar border-sidebar-border shadow-sm text-sidebar-foreground">
+        <Card className="border-primary/20 bg-white shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-sidebar-foreground/80">Total Bookings</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-700">Total Bookings</CardTitle>
             <CalendarDays className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{stats.totalBookings}</div>
-            <p className="text-xs text-sidebar-foreground/60 mt-1">All time</p>
+            <p className="text-xs text-neutral-500 mt-1">All time</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-sidebar border-sidebar-border shadow-sm text-sidebar-foreground">
+        <Card className="border-primary/20 bg-white shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-sidebar-foreground/80">Pending Requests</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-700">Pending Requests</CardTitle>
             <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-yellow-500">{stats.pendingBookings}</div>
-            <p className="text-xs text-sidebar-foreground/60 mt-1">Require attention</p>
+            <p className="text-xs text-neutral-500 mt-1">Require attention</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-sidebar border-sidebar-border shadow-sm text-sidebar-foreground">
+        <Card className="border-primary/20 bg-white shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-sidebar-foreground/80">Current Occupancy</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-700">Current Occupancy</CardTitle>
             <BedDouble className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{occupancyRate}%</div>
-            <p className="text-xs text-sidebar-foreground/60 mt-1">
+            <p className="text-xs text-neutral-500 mt-1">
               {stats.occupiedUnits} of {stats.totalUnits} units occupied
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-sidebar border-sidebar-border shadow-sm text-sidebar-foreground">
+        <Card className="border-primary/20 bg-white shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-sidebar-foreground/80">Total Guests</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-700">Total Guests</CardTitle>
             <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{stats.totalGuests}</div>
-            <p className="text-xs text-sidebar-foreground/60 mt-1">Registered accounts</p>
+            <p className="text-xs text-neutral-500 mt-1">Registered accounts</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="col-span-1 lg:col-span-2 bg-sidebar border-sidebar-border text-sidebar-foreground">
+        <Card className="col-span-1 lg:col-span-2 border-primary/20 bg-white">
           <CardHeader>
             <CardTitle>Room Occupancy</CardTitle>
-            <CardDescription className="text-sidebar-foreground/60">Current utilization across all room types.</CardDescription>
+            <CardDescription className="text-neutral-500">Current utilization across all room types.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[350px] w-full mt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={occupancyData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                  <XAxis dataKey="roomName" stroke="#888" tick={{ fill: '#888' }} />
-                  <YAxis stroke="#888" tick={{ fill: '#888' }} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ececec" vertical={false} />
+                  <XAxis dataKey="roomName" stroke="#666" tick={{ fill: '#666' }} />
+                  <YAxis stroke="#666" tick={{ fill: '#666' }} allowDecimals={false} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#111', border: '1px solid #333', color: '#fff' }}
-                    itemStyle={{ color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', color: '#111' }}
+                    itemStyle={{ color: '#111' }}
                   />
                   <Legend />
                   <Bar dataKey="occupied" name="Occupied" fill="#bfa15f" radius={[4, 4, 0, 0]} stackId="a" />
-                  <Bar dataKey="available" name="Available" fill="#333" radius={[4, 4, 0, 0]} stackId="a" />
+                  <Bar dataKey="available" name="Available" fill="#111" radius={[4, 4, 0, 0]} stackId="a" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-sidebar border-sidebar-border text-sidebar-foreground flex flex-col">
+        <Card className="border-primary/20 bg-white flex flex-col">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
-            <CardDescription className="text-sidebar-foreground/60">Latest booking requests.</CardDescription>
+            <CardDescription className="text-neutral-500">Latest booking requests.</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 overflow-auto">
             <div className="space-y-6">
               {recentActivity.length === 0 ? (
-                <div className="text-center text-sidebar-foreground/50 py-8">No recent activity</div>
+                <div className="text-center text-neutral-500 py-8">No recent activity</div>
               ) : (
                 recentActivity.map((booking) => (
-                  <div key={booking.id} className="flex items-start gap-4 pb-4 border-b border-sidebar-border last:border-0 last:pb-0">
+                  <div key={booking.id} className="flex items-start gap-4 pb-4 border-b border-primary/15 last:border-0 last:pb-0">
                     <div className="mt-1">
                       {booking.status === 'pending' && <Clock className="h-5 w-5 text-yellow-500" />}
                       {booking.status === 'approved' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
@@ -126,10 +126,10 @@ export default function AdminDashboard() {
                       <p className="text-sm font-medium leading-none">
                         {booking.guestName}
                       </p>
-                      <p className="text-xs text-sidebar-foreground/60">
+                      <p className="text-xs text-neutral-600">
                         Booked {booking.roomName} for {booking.guestCount} {booking.guestCount === 1 ? 'guest' : 'guests'}
                       </p>
-                      <p className="text-xs text-sidebar-foreground/40">
+                      <p className="text-xs text-neutral-400">
                         {format(new Date(booking.createdAt), "MMM d, h:mm a")}
                       </p>
                     </div>

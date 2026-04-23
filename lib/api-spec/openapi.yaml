@@ -404,6 +404,7 @@ components:
         id: { type: integer }
         roomId: { type: integer }
         roomName: { type: string }
+        roomImage: { type: string }
         userId: { type: integer }
         guestName: { type: string }
         guestEmail: { type: string }

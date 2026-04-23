@@ -363,27 +363,36 @@ export default function Book() {
                       name="checkIn"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>Check-in Date</FormLabel>
+                          <FormLabel className="text-neutral-700 font-semibold">Check-in Date</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
                                   variant={"outline"}
-                                  className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                                  className={cn("w-full pl-3 text-left font-normal h-11 border-neutral-300", !field.value && "text-muted-foreground")}
                                 >
-                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                  {field.value ? format(field.value, "EEEE, MMMM d, yyyy") : <span>Pick a date</span>}
                                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                                initialFocus
-                              />
+                            <PopoverContent className="w-full sm:w-96 p-6 bg-white border-primary/20 shadow-lg" align="start">
+                              <div className="space-y-4">
+                                <div className="text-center pb-4 border-b border-neutral-200">
+                                  <h3 className="font-serif font-bold text-lg text-neutral-900">Select Check-in Date</h3>
+                                  <p className="text-sm text-neutral-600 mt-1">Choose when you'll arrive</p>
+                                </div>
+                                <div className="flex justify-center">
+                                  <Calendar
+                                    mode="single"
+                                    selected={field.value}
+                                    onSelect={field.onChange}
+                                    disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                                    initialFocus
+                                    className="text-lg"
+                                  />
+                                </div>
+                              </div>
                             </PopoverContent>
                           </Popover>
                           <FormMessage />
@@ -395,29 +404,38 @@ export default function Book() {
                       name="checkOut"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>Check-out Date</FormLabel>
+                          <FormLabel className="text-neutral-700 font-semibold">Check-out Date</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
                                   variant={"outline"}
-                                  className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                                  className={cn("w-full pl-3 text-left font-normal h-11 border-neutral-300", !field.value && "text-muted-foreground")}
                                 >
-                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                  {field.value ? format(field.value, "EEEE, MMMM d, yyyy") : <span>Pick a date</span>}
                                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) => 
-                                  date <= (form.getValues("checkIn") || new Date())
-                                }
-                                initialFocus
-                              />
+                            <PopoverContent className="w-full sm:w-96 p-6 bg-white border-primary/20 shadow-lg" align="start">
+                              <div className="space-y-4">
+                                <div className="text-center pb-4 border-b border-neutral-200">
+                                  <h3 className="font-serif font-bold text-lg text-neutral-900">Select Check-out Date</h3>
+                                  <p className="text-sm text-neutral-600 mt-1">Choose when you'll depart</p>
+                                </div>
+                                <div className="flex justify-center">
+                                  <Calendar
+                                    mode="single"
+                                    selected={field.value}
+                                    onSelect={field.onChange}
+                                    disabled={(date) => 
+                                      date <= (form.getValues("checkIn") || new Date())
+                                    }
+                                    initialFocus
+                                    className="text-lg"
+                                  />
+                                </div>
+                              </div>
                             </PopoverContent>
                           </Popover>
                           <FormMessage />
@@ -475,36 +493,54 @@ export default function Book() {
 
         {/* Right Column - Room Summary */}
         <div className="md:order-last order-first mb-8 md:mb-0">
-          <Card className="sticky top-24 overflow-hidden border-none shadow-lg">
-            <div className="h-48 relative">
-              <img src={img} alt={room.name} className="w-full h-full object-cover" />
+          <Card className="sticky top-24 overflow-hidden border-2 border-primary/30 shadow-lg">
+            <div className="relative h-64 overflow-hidden border-b-2 border-primary/30 group">
+              <img 
+                src={img} 
+                alt={room.name} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+              />
+              <div className="absolute top-4 right-4 bg-black text-primary px-4 py-2 font-semibold shadow-md border border-primary/40">
+                ₱{room.price.toLocaleString()}
+                <span className="text-sm font-normal text-gray-300 ml-1">
+                  /night
+                </span>
+              </div>
             </div>
-            <CardContent className="p-6">
-              <h3 className="text-2xl font-serif font-bold mb-2">{room.name}</h3>
-              <div className="flex items-center text-sm text-muted-foreground mb-6">
+            <CardContent className="p-6 bg-white">
+              <h3 className="text-2xl font-serif font-bold mb-3">{room.name}</h3>
+              
+              <div className="flex items-center text-sm font-medium text-foreground bg-primary/15 border border-primary/30 px-3 py-2 mb-6 w-fit">
                 <Users className="w-4 h-4 mr-2" />
-                Up to {room.capacity} guests
+                Max {room.capacity} Guests
               </div>
               
-              <div className="space-y-4 mb-6">
-                <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground/80">Includes</h4>
-                <div className="space-y-2">
-                  {room.features.slice(0, 4).map((feature, i) => (
-                    <div key={i} className="flex items-start text-sm text-muted-foreground">
+              <p className="text-muted-foreground leading-relaxed mb-6 text-sm">
+                {room.description}
+              </p>
+
+              <div className="mb-6 border border-primary/20 bg-primary/5 p-4">
+                <h4 className="text-xs font-semibold uppercase tracking-widest mb-4 text-primary">
+                  Amenities Included
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {room.features.map((feature, i) => (
+                    <div key={i} className="flex items-start text-sm text-foreground">
                       <CheckCircle2 className="w-4 h-4 text-primary mr-2 mt-0.5 flex-shrink-0" />
                       <span>{feature}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              
-              <div className="pt-6 border-t">
-                <div className="flex justify-between items-end">
-                  <span className="text-muted-foreground">Rate</span>
-                  <div className="text-right">
-                    <span className="text-2xl font-bold text-primary">₱{room.price.toLocaleString()}</span>
-                    <span className="text-sm text-muted-foreground block">per night</span>
-                  </div>
+
+              <div className="pt-4 border-t-2 border-primary/20">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-muted-foreground font-medium uppercase tracking-wider text-xs">
+                    Availability
+                  </span>
+                  <span className="font-bold text-foreground">
+                    {room.totalUnits - room.currentOccupied} of {room.totalUnits} Available
+                  </span>
                 </div>
               </div>
             </CardContent>

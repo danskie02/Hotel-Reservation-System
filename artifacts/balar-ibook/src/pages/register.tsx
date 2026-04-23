@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@assets/balar_logo_1776822257809.png";
+import logo from "@assets/balar_logo.png";
 
 const registerSchema = z.object({
   fullName: z.string().min(1, "Please fill out all fields"),

@@ -1,6 +1,10 @@
 import { Router, type IRouter } from "express";
 import { db, bookingsTable, roomsTable, usersTable } from "@workspace/db";
 import { eq, desc, and, sql } from "drizzle-orm";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import crypto from "crypto";
 import {
   AdminCreateRoomBody,
   AdminUpdateRoomBody,
@@ -9,10 +13,45 @@ import {
 import { requireUser } from "../lib/auth";
 import { serializeBooking } from "./bookings";
 import { roomsWithOccupancy } from "./rooms";
+import { sendBookingDecisionEmail } from "../lib/notifications";
 
 const router: IRouter = Router();
+const uploadDir = path.resolve(process.cwd(), "uploads");
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname || "").toLowerCase() || ".jpg";
+    cb(null, `${Date.now()}-${crypto.randomUUID()}${ext}`);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error("Only image uploads are allowed"));
+  },
+});
 
 router.use(requireUser(true));
+
+router.post("/admin/uploads/room-image", upload.single("image"), async (req, res): Promise<void> => {
+  if (!req.file) {
+    res.status(400).json({ error: "Image file is required" });
+    return;
+  }
+
+  res.json({ url: `/uploads/${req.file.filename}` });
+});
 
 router.get("/admin/bookings", async (req, res): Promise<void> => {
   const status = typeof req.query.status === "string" ? req.query.status : "all";
@@ -59,6 +98,20 @@ router.post("/admin/bookings/:id/decision", async (req, res): Promise<void> => {
   }
   const [room] = await db.select().from(roomsTable).where(eq(roomsTable.id, updated.roomId));
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, updated.userId));
+
+  if (room && user) {
+    await sendBookingDecisionEmail(newStatus, {
+      guestName: user.fullName,
+      guestEmail: user.email,
+      roomName: room.name,
+      checkIn: updated.checkIn,
+      checkOut: updated.checkOut,
+      guestCount: updated.guestCount,
+      specialRequests: updated.specialRequests,
+      bookingId: updated.id,
+    });
+  }
+
   res.json(serializeBooking({ booking: updated, room: room ?? null, user: user ?? null }));
 });
 
@@ -143,7 +196,7 @@ router.get("/admin/users", async (_req, res): Promise<void> => {
       contactNumber: usersTable.contactNumber,
       role: usersTable.role,
       createdAt: usersTable.createdAt,
-      bookingCount: sql<number>`COALESCE((SELECT COUNT(*)::int FROM ${bookingsTable} WHERE ${bookingsTable.userId} = ${usersTable.id}), 0)`,
+      bookingCount: sql<number>`COALESCE((SELECT COUNT(*)::int FROM ${bookingsTable} WHERE ${bookingsTable.userId} = ${usersTable.id} AND ${bookingsTable.status} IN ('pending', 'approved')), 0)`,
     })
     .from(usersTable)
     .orderBy(desc(usersTable.createdAt));

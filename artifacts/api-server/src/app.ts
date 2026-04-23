@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import cors from "cors";
 import session from "express-session";
 import pinoHttp from "pino-http";
+import path from "path";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
@@ -28,10 +29,13 @@ app.use(
 );
 app.set("trust proxy", 1);
 app.use(cors({ credentials: true }));
+app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const sessionSecret = process.env.SESSION_SECRET;
+const sessionSecret =
+  process.env.SESSION_SECRET ??
+  (process.env.NODE_ENV !== "production" ? "dev-session-secret-change-me" : undefined);
 if (!sessionSecret) {
   throw new Error("SESSION_SECRET environment variable is required");
 }

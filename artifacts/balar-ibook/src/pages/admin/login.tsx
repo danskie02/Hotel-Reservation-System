@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@assets/balar_logo_1776822257809.png";
+import logo from "@assets/balar_logo.png";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -31,14 +31,14 @@ export default function AdminLogin() {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       const res = await loginUser.mutateAsync({ data });
-      queryClient.invalidateQueries({ queryKey: getGetCurrentUserQueryKey() });
       
       if (res.user.role === "admin") {
+        // Refetch current user data to ensure it's fresh before redirecting
+        await queryClient.refetchQueries({ queryKey: getGetCurrentUserQueryKey() });
         toast({ description: "Admin authentication successful" });
         setLocation("/admin");
       } else {
         toast({ variant: "destructive", description: "Unauthorized access. Admin privileges required." });
-        // Although logged in, they aren't admin. App.tsx will route them away, but we should force a visual error here too.
         form.setError("root", { message: "Unauthorized access. Admin privileges required." });
       }
     } catch (error: any) {

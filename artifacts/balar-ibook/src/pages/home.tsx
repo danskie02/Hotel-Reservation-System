@@ -16,7 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import heroBg from "/images/hero-bg.png";
+import heroBg from "/images/home_en.png";
 import room1 from "/images/room-1.png";
 import room2 from "/images/room-2.png";
 import room3 from "/images/room-3.png";
@@ -41,7 +41,7 @@ export default function Home() {
           <img
             src={heroBg}
             alt="Balar Hotel Exterior"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[center_35%]"
           />
           <div className="absolute inset-0 bg-black/65" />
         </div>
@@ -301,7 +301,7 @@ export default function Home() {
                 </h2>
                 <div className="w-16 h-[2px] bg-primary mb-6" />
                 <p className="text-muted-foreground mb-8 text-lg">
-                  Located in the heart of Boac, Marinduque, Balar Hotel is
+                  Located in the heart of the Philippines, Balar Hotel is
                   easily accessible while offering a secluded atmosphere away
                   from the bustle.
                 </p>
@@ -313,7 +313,7 @@ export default function Home() {
                         Address
                       </h4>
                       <p className="text-muted-foreground text-sm">
-                        Boac, Marinduque, Philippines
+                        Balaring, Boac, Marinduque, Philippines
                       </p>
                     </div>
                   </div>
@@ -342,8 +342,8 @@ export default function Home() {
                 </div>
               </div>
               <div className="h-96 overflow-hidden border-2 border-primary/30">
-                <div className="w-full h-full flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000')] bg-cover bg-center">
-                  <div className="bg-black/85 p-6 backdrop-blur text-center border border-primary/40">
+                <div className="w-full h-full flex items-center justify-center bg-[url('https://tools.paintmaps.com/og_image/map_cropping/3-85676149-1.jpeg')] bg-cover bg-center">
+                  <div className="bg-white/50 p-6 backdrop-blur text-center border border-primary/40">
                     <MapPin className="w-12 h-12 text-primary mx-auto mb-2" />
                     <h3 className="font-serif text-xl text-primary">
                       Balar Hotel

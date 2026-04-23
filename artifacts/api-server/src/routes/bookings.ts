@@ -3,6 +3,7 @@ import { db, bookingsTable, roomsTable, usersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { CreateBookingBody } from "@workspace/api-zod";
 import { requireUser, getCurrentUser } from "../lib/auth";
+import { sendBookingPendingEmail } from "../lib/notifications";
 
 const router: IRouter = Router();
 
@@ -21,6 +22,7 @@ function serializeBooking(row: {
     id: booking.id,
     roomId: booking.roomId,
     roomName: room?.name ?? "",
+    roomImage: room?.imageUrl ?? "",
     userId: booking.userId,
     guestName: user?.fullName ?? "",
     guestEmail: user?.email ?? "",
@@ -77,6 +79,17 @@ router.post("/bookings", async (req, res): Promise<void> => {
     res.status(500).json({ error: "Failed to create booking" });
     return;
   }
+
+  await sendBookingPendingEmail({
+    guestName: user.fullName,
+    guestEmail: user.email,
+    roomName: room.name,
+    checkIn: booking.checkIn,
+    checkOut: booking.checkOut,
+    guestCount: booking.guestCount,
+    specialRequests: booking.specialRequests,
+    bookingId: booking.id,
+  });
 
   res.json(serializeBooking({ booking, room, user }));
 });

@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { LayoutDashboard, Calendar, BedDouble, Users, LogOut, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
-import logo from "@assets/balar_logo_1776822257809.png";
+import logo from "@assets/balar_logo.png";
 
 const sidebarNavItems = [
   {
@@ -57,7 +57,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <Button
           key={item.href}
           variant={location === item.href ? "secondary" : "ghost"}
-          className={`w-full justify-start ${location === item.href ? "bg-primary/20 text-primary hover:bg-primary/30" : ""}`}
+          className={`w-full justify-start ${
+            location === item.href
+              ? "bg-primary/20 text-primary hover:bg-primary/30"
+              : "text-white/85 hover:bg-white/10 hover:text-white"
+          }`}
           asChild
           onClick={() => setOpen(false)}
         >
@@ -71,28 +75,28 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row bg-background">
+    <div className="flex min-h-screen flex-col md:flex-row bg-gradient-to-br from-neutral-50 via-white to-amber-50/40">
       {/* Mobile Header */}
-      <header className="flex h-16 items-center gap-4 border-b bg-sidebar px-6 md:hidden">
+      <header className="flex h-16 items-center gap-4 border-b border-primary/20 bg-black px-6 md:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-sidebar-foreground">
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64 bg-sidebar p-0 text-sidebar-foreground border-sidebar-border">
-            <div className="flex h-16 items-center border-b border-sidebar-border px-6">
-              <img src={logo} alt="Balar Hotel" className="h-8 w-auto invert" />
-              <span className="ml-3 font-serif font-bold tracking-tight">Admin</span>
+          <SheetContent side="left" className="w-64 bg-black p-0 text-white border-primary/25">
+            <div className="flex h-16 items-center border-b border-primary/25 px-6">
+              <img src={logo} alt="Balar Hotel" className="h-8 w-auto" />
+              <span className="ml-3 font-serif font-bold tracking-tight text-primary">Admin</span>
             </div>
             <ScrollArea className="flex-1 py-6 px-4">
               <NavItems />
             </ScrollArea>
-            <div className="p-4 border-t border-sidebar-border">
+            <div className="p-4 border-t border-primary/25">
               <div className="flex items-center gap-3 px-2 py-3 mb-2">
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{user?.fullName}</span>
-                  <span className="text-xs text-sidebar-foreground/70">{user?.email}</span>
+                  <span className="text-xs text-white/70">{user?.email}</span>
                 </div>
               </div>
               <Button variant="ghost" className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={handleLogout}>
@@ -108,19 +112,19 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex sticky top-0 h-screen">
-        <div className="flex h-16 items-center border-b border-sidebar-border px-6">
-          <img src={logo} alt="Balar Hotel" className="h-8 w-auto invert" />
-          <span className="ml-3 font-serif font-bold tracking-tight">Admin</span>
+      <aside className="hidden w-64 flex-col border-r border-primary/20 bg-black text-white md:flex sticky top-0 h-screen">
+        <div className="flex h-16 items-center border-b border-primary/20 px-6">
+          <img src={logo} alt="Balar Hotel" className="h-8 w-auto" />
+          <span className="ml-3 font-serif font-bold tracking-tight text-primary">Admin</span>
         </div>
         <ScrollArea className="flex-1 py-6 px-4">
           <NavItems />
         </ScrollArea>
-        <div className="p-4 border-t border-sidebar-border">
+        <div className="p-4 border-t border-primary/20">
           <div className="flex items-center gap-3 px-2 py-3 mb-2">
             <div className="flex flex-col overflow-hidden">
               <span className="text-sm font-medium truncate">{user?.fullName}</span>
-              <span className="text-xs text-sidebar-foreground/70 truncate">{user?.email}</span>
+              <span className="text-xs text-white/70 truncate">{user?.email}</span>
             </div>
           </div>
           <Button variant="ghost" className="w-full justify-start text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={handleLogout}>

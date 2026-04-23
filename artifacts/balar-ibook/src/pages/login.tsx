@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@assets/balar_logo_1776822257809.png";
+import logo from "@assets/balar_logo_white.png";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -31,7 +31,8 @@ export default function Login() {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       const res = await loginUser.mutateAsync({ data });
-      queryClient.invalidateQueries({ queryKey: getGetCurrentUserQueryKey() });
+      // Refetch current user data to ensure it's fresh before redirecting
+      await queryClient.refetchQueries({ queryKey: getGetCurrentUserQueryKey() });
       toast({ description: "Welcome back!" });
       
       if (res.user.role === "admin") {
