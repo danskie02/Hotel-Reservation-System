@@ -10,6 +10,25 @@ import { pool } from "@workspace/db";
 
 const app: Express = express();
 
+// Initialize session table if it doesn't exist
+async function initializeSessionTable() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS session (
+        sid varchar NOT NULL COLLATE "default",
+        sess json NOT NULL,
+        expire timestamp(6) NOT NULL,
+        PRIMARY KEY (sid)
+      );
+      CREATE INDEX IF NOT EXISTS IDX_session_expire ON session (expire);
+    `);
+    logger.info("Session table initialized successfully");
+  } catch (error) {
+    logger.error("Failed to initialize session table:", error);
+    throw error;
+  }
+}
+
 app.use(
   pinoHttp({
     logger,
@@ -64,4 +83,5 @@ app.use(
 
 app.use("/api", router);
 
+export { initializeSessionTable };
 export default app;
