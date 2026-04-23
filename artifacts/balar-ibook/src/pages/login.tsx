@@ -31,16 +31,27 @@ export default function Login() {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       const res = await loginUser.mutateAsync({ data });
-      // Refetch current user data to ensure it's fresh before redirecting
+      console.log("Login response:", res);
+      
+      if (!res || !res.user) {
+        console.error("Login response missing user data:", res);
+        form.setError("root", { message: "Login failed: no user data returned" });
+        return;
+      }
+      
+      // Invalidate and refetch current user data to ensure it's fresh before redirecting
+      await queryClient.invalidateQueries({ queryKey: getGetCurrentUserQueryKey() });
       await queryClient.refetchQueries({ queryKey: getGetCurrentUserQueryKey() });
       toast({ description: "Welcome back!" });
       
-      if (res.user.role === "admin") {
-        setLocation("/admin");
-      } else {
-        setLocation("/my-bookings");
-      }
+      console.log("User role:", res.user.role);
+      const redirectPath = res.user.role === "admin" ? "/admin" : "/my-bookings";
+      console.log("Redirecting to:", redirectPath);
+      
+      // Use setTimeout to ensure state updates complete
+      setTimeout(() => setLocation(redirectPath), 100);
     } catch (error: any) {
+      console.error("Login error:", error);
       form.setError("root", { message: "Invalid email or password" });
     }
   };
