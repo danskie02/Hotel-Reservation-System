@@ -9,6 +9,21 @@ import { logger } from "./lib/logger";
 import { pool } from "@workspace/db";
 
 const app: Express = express();
+const isProduction = process.env.NODE_ENV === "production";
+
+function parseAllowedOrigins(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+const allowedOrigins = new Set<string>([
+  ...parseAllowedOrigins(process.env.CORS_ALLOWED_ORIGINS),
+  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL.trim()] : []),
+  ...(!isProduction ? ["http://localhost:5173", "http://127.0.0.1:5173"] : []),
+]);
 
 // Initialize session table if it doesn't exist
 async function initializeSessionTable() {
@@ -51,8 +66,24 @@ app.use(
 app.set("trust proxy", 1);
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || (process.env.NODE_ENV !== "production" ? "http://localhost:5173" : true),
+    origin(origin, callback) {
+      // Allow non-browser requests (no Origin header), e.g. health checks.
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOrigins.has(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS origin not allowed: ${origin}`));
+    },
     credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    maxAge: 86400,
   }),
 );
 app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
@@ -79,8 +110,10 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      // Render commonly serves frontend and API on different domains.
+      // Cross-site session cookies require SameSite=None + Secure.
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
       maxAge: 1000 * 60 * 60 * 24 * 30,
     },
   }),
