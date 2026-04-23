@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
     "build": "vite build --config vite.config.ts",
-    "start": "vite preview --config vite.config.ts --host 0.0.0.0",
-    "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
+    "start": "serve -s dist/public -l ${PORT:-5173}",
+    "serve": "serve -s dist/public -l ${PORT:-5173}",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
@@ -73,6 +73,7 @@
     "vaul": "^1.1.2",
     "vite": "catalog:",
     "wouter": "^3.3.5",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "serve": "^14.2.3"
   }
 }
