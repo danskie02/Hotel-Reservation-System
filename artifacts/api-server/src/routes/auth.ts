@@ -4,8 +4,12 @@ import { db, usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { RegisterUserBody, LoginUserBody } from "@workspace/api-zod";
 import { getCurrentUser, serializeUser } from "../lib/auth";
+import { noCache } from "../middlewares/no-cache";
 
 const router: IRouter = Router();
+
+// Disable caching on all auth endpoints to prevent stale session state
+router.use(noCache);
 
 router.post("/auth/register", async (req, res): Promise<void> => {
   const parsed = RegisterUserBody.safeParse(req.body);
