@@ -5,12 +5,9 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Users, CheckCircle2, BedDouble } from "lucide-react";
 import { motion } from "framer-motion";
-import room1 from "/images/room-1.png";
-import room2 from "/images/room-2.png";
-import room3 from "/images/room-3.png";
-import room4 from "/images/room-4.png";
+import placeholderImage from "/images/room-1.png";
 
-const fallbackImages = [room1, room2, room3, room4];
+const fallbackImage = placeholderImage;
 
 export default function Rooms() {
   const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
@@ -78,7 +75,6 @@ export default function Rooms() {
                 const isFullyBooked = room.currentOccupied >= room.totalUnits;
                 const percentOccupied =
                   (room.currentOccupied / room.totalUnits) * 100;
-                const fallbackImage = fallbackImages[index % fallbackImages.length];
                 const img = room.imageUrl ? resolveImageUrl(room.imageUrl) : fallbackImage;
 
                 return (

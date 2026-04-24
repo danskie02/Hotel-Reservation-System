@@ -114,6 +114,15 @@ export default function AdminLogin() {
                 >
                   {loginUser.isPending ? "Authenticating..." : "Authenticate"}
                 </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 text-base font-semibold border-gray-700 text-gray-300 hover:bg-gray-900 hover:text-white"
+                  onClick={() => setLocation("/")}
+                >
+                  Back to Home
+                </Button>
               </form>
             </Form>
           </CardContent>

@@ -15,7 +15,7 @@ async function roomsWithOccupancy() {
       totalUnits: roomsTable.totalUnits,
       imageUrl: roomsTable.imageUrl,
       features: roomsTable.features,
-      occupied: sql<number>`COALESCE((SELECT COUNT(*)::int FROM ${bookingsTable} WHERE ${bookingsTable.roomId} = ${roomsTable.id} AND ${bookingsTable.status} = 'approved' AND ${bookingsTable.checkOut} >= CURRENT_DATE), 0)`,
+      occupied: sql<number>`COALESCE((SELECT COUNT(*)::int FROM "bookings" WHERE "room_id" = "rooms"."id" AND "status" = 'approved' AND "check_out" >= CURRENT_DATE), 0)`,
     })
     .from(roomsTable)
     .orderBy(roomsTable.id);
