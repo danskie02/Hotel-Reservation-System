@@ -15,7 +15,15 @@ import logo from "@assets/balar_logo.png";
 const registerSchema = z.object({
   fullName: z.string().min(1, "Please fill out all fields"),
   email: z.string().email("Invalid email address").min(1, "Please fill out all fields"),
-  contactNumber: z.string().min(1, "Please fill out all fields"),
+  contactNumber: z.string()
+    .min(1, "Please fill out all fields")
+    .refine(
+      (value) => {
+        const digitsOnly = value.replace(/\D/g, "");
+        return digitsOnly.length === 12 && digitsOnly.startsWith("63");
+      },
+      "Contact number must be exactly 12 digits in the 639... format"
+    ),
   password: z.string().min(8, "Password must be at least 8 characters").regex(/[!@#$%^&*()]/, "Password must contain at least one special character"),
   confirmPassword: z.string().min(1, "Please fill out all fields")
 }).refine((data) => data.password === data.confirmPassword, {
