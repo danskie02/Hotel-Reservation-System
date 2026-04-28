@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useAdminListBookings, getAdminListBookingsQueryKey, useAdminDecideBooking, getAdminStatsQueryKey } from "@workspace/api-client-react";
+import { useState, useEffect } from "react";
+import { useAdminListBookings, getAdminListBookingsQueryKey, useAdminDecideBooking, useAdminConfirmCheckin, useAdminVoidBooking, getAdminStatsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
@@ -8,12 +8,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Info } from "lucide-react";
+import { CheckCircle2, XCircle, Info, AlertTriangle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+const EIGHT_HOURS_MS = 8 * 60 * 60 * 1000;
 
 export default function AdminBookings() {
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected" | "confirmed" | "voided">("all");
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [voidReason, setVoidReason] = useState("");
+  const [countdown, setCountdown] = useState<string>("");
+  const [showVoidDialog, setShowVoidDialog] = useState(false);
   
   const queryParams = filter === "all" ? {} : { status: filter };
   const { data: bookings = [], isLoading } = useAdminListBookings(queryParams, { 
@@ -23,25 +30,96 @@ export default function AdminBookings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const decideBooking = useAdminDecideBooking();
+  const confirmCheckin = useAdminConfirmCheckin();
+  const voidBooking = useAdminVoidBooking();
+
+  // Calculate countdown timer for approved bookings
+  useEffect(() => {
+    if (selectedBooking?.status !== "approved" || !selectedBooking?.approvedAt) {
+      setCountdown("");
+      return;
+    }
+
+    const updateCountdown = () => {
+      const approvedTime = new Date(selectedBooking.approvedAt).getTime();
+      const expiryTime = approvedTime + EIGHT_HOURS_MS;
+      const now = Date.now();
+      const remaining = expiryTime - now;
+
+      if (remaining <= 0) {
+        setCountdown("Expired");
+        return;
+      }
+
+      const hours = Math.floor(remaining / (60 * 60 * 1000));
+      const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+      const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+      
+      setCountdown(`${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [selectedBooking]);
 
   const handleDecision = async (id: number, decision: "approve" | "reject") => {
     try {
       await decideBooking.mutateAsync({ id, data: { decision } });
       queryClient.invalidateQueries({ queryKey: getAdminListBookingsQueryKey() });
-      queryClient.invalidateQueries({ queryKey: getAdminListStatsQueryKey() }); // Using manual invalidation
+      queryClient.invalidateQueries({ queryKey: getAdminListStatsQueryKey() });
       toast({ description: `Booking ${decision}d successfully.` });
     } catch (error: any) {
       toast({ variant: "destructive", description: error.message || `Failed to ${decision} booking.` });
     }
   };
 
+  const handleConfirmCheckin = async (id: number) => {
+    try {
+      await confirmCheckin.mutateAsync({ id });
+      queryClient.invalidateQueries({ queryKey: getAdminListBookingsQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getAdminListStatsQueryKey() });
+      toast({ description: "Check-in confirmed successfully." });
+      setSelectedBooking(null);
+    } catch (error: any) {
+      toast({ variant: "destructive", description: error.message });
+    }
+  };
+
+  const handleVoidBooking = async (id: number, reason: string) => {
+    if (!reason.trim()) {
+      toast({ variant: "destructive", description: "Reason for voiding is required." });
+      return;
+    }
+    try {
+      await voidBooking.mutateAsync({ id, data: { reason } });
+      queryClient.invalidateQueries({ queryKey: getAdminListBookingsQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getAdminListStatsQueryKey() });
+      toast({ description: "Booking voided successfully." });
+      setSelectedBooking(null);
+      setShowVoidDialog(false);
+      setVoidReason("");
+    } catch (error: any) {
+      toast({ variant: "destructive", description: error.message });
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "approved": return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      case "confirmed": return "bg-blue-50 text-blue-700 border-blue-200";
+      case "voided": return "bg-gray-50 text-gray-700 border-gray-200";
       case "rejected": return "bg-rose-50 text-rose-700 border-rose-200";
       case "pending": return "bg-amber-50 text-amber-700 border-amber-200";
       default: return "bg-gray-50 text-gray-700 border-gray-200";
     }
+  };
+
+  const isApprovalExpired = (approvedAt: string | null) => {
+    if (!approvedAt) return false;
+    const approvedTime = new Date(approvedAt).getTime();
+    const expiryTime = approvedTime + EIGHT_HOURS_MS;
+    return Date.now() > expiryTime;
   };
 
   const getAdminListStatsQueryKey = getAdminStatsQueryKey;
@@ -55,7 +133,7 @@ export default function AdminBookings() {
         </div>
         
         <div className="flex rounded-lg border border-primary/20 bg-white p-1 shadow-sm">
-          {["all", "pending", "approved", "rejected"].map((status) => (
+          {["all", "pending", "approved", "confirmed", "rejected", "voided"].map((status) => (
             <button
               key={status}
               onClick={() => setFilter(status as any)}
@@ -118,9 +196,16 @@ export default function AdminBookings() {
                         </div>
                       </TableCell>
                       <TableCell className="py-4 px-6">
-                        <Badge variant="outline" className={`capitalize font-medium ${getStatusColor(booking.status)}`}>
-                          {booking.status}
-                        </Badge>
+                        <div className="flex flex-col gap-1">
+                          <Badge variant="outline" className={`capitalize font-medium ${getStatusColor(booking.status)}`}>
+                            {booking.status}
+                          </Badge>
+                          {booking.status === "approved" && booking.approvedAt && (
+                            <span className={`text-xs font-medium ${isApprovalExpired(booking.approvedAt) ? "text-red-600" : "text-amber-600"}`}>
+                              {isApprovalExpired(booking.approvedAt) ? "Expired" : "~8hr window"}
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-right py-4 px-6">
                         <div className="flex justify-end gap-2">
@@ -219,8 +304,39 @@ export default function AdminBookings() {
                     </div>
                   </div>
                 )}
+
+                {selectedBooking.status === "approved" && selectedBooking.approvedAt && (
+                  <div className="col-span-2">
+                    <span className="text-neutral-500 block mb-1">Approval Window</span>
+                    <div className={`rounded-md border-l-2 p-3 ${isApprovalExpired(selectedBooking.approvedAt) ? "border-red-300 bg-red-50" : "border-amber-300 bg-amber-50"}`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <AlertTriangle className="h-4 w-4 text-amber-600" />
+                        <span className="font-medium text-sm">Countdown: {countdown || "Calculating..."}</span>
+                      </div>
+                      <span className="text-xs text-neutral-600">
+                        Approved: {format(new Date(selectedBooking.approvedAt), "MMM d, yyyy 'at' h:mm a")}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {selectedBooking.voidedAt && (
+                  <div className="col-span-2">
+                    <span className="text-neutral-500 block mb-1">Voided</span>
+                    <div className="rounded-md border-l-2 border-gray-300 bg-gray-50 p-3">
+                      <div className="text-xs text-neutral-600 mb-1">
+                        {format(new Date(selectedBooking.voidedAt), "MMM d, yyyy 'at' h:mm a")}
+                      </div>
+                      {selectedBooking.voidedReason && (
+                        <div className="text-xs font-medium text-neutral-700">
+                          Reason: {selectedBooking.voidedReason}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
                 
-                {selectedBooking.decidedAt && (
+                {selectedBooking.decidedAt && !selectedBooking.voidedAt && (
                   <div className="col-span-2 mt-2 border-t border-primary/15 pt-2 text-right text-xs text-neutral-500">
                     Decision made on: {format(new Date(selectedBooking.decidedAt), "MMM d, yyyy 'at' h:mm a")}
                   </div>
@@ -259,9 +375,82 @@ export default function AdminBookings() {
                 </Button>
               </div>
             )}
+
+            {selectedBooking?.status === "approved" && (
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  className="border-red-300 text-red-600 hover:bg-red-50"
+                  onClick={() => {
+                    setShowVoidDialog(true);
+                  }}
+                  disabled={isApprovalExpired(selectedBooking.approvedAt) || voidBooking.isPending}
+                  title={isApprovalExpired(selectedBooking.approvedAt) ? "Approval window expired" : "Void Reservation"}
+                >
+                  Void Reservation
+                </Button>
+                <Button 
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                  onClick={() => handleConfirmCheckin(selectedBooking.id)}
+                  disabled={confirmCheckin.isPending}
+                >
+                  Confirm Check-in
+                </Button>
+              </div>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Void Dialog */}
+      {showVoidDialog && (
+        <Dialog open={showVoidDialog} onOpenChange={setShowVoidDialog}>
+          <DialogContent className="max-w-sm border-primary/25 bg-white text-neutral-900">
+            <DialogHeader>
+              <DialogTitle className="font-serif text-xl">Void Reservation</DialogTitle>
+              <DialogDescription className="text-neutral-500">
+                Ref: #{selectedBooking?.id.toString().padStart(4, '0')}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 pt-4">
+              <div>
+                <Label htmlFor="void-reason" className="text-neutral-700">
+                  Reason for Voiding <span className="text-red-600">*</span>
+                </Label>
+                <textarea
+                  id="void-reason"
+                  className="mt-2 w-full px-3 py-2 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  placeholder="e.g., Client did not arrive within the 8-hour window"
+                  rows={4}
+                  value={voidReason}
+                  onChange={(e) => setVoidReason(e.target.value)}
+                />
+              </div>
+            </div>
+            
+            <DialogFooter className="mt-6">
+              <Button 
+                variant="ghost" 
+                onClick={() => {
+                  setShowVoidDialog(false);
+                  setVoidReason("");
+                }}
+                className="text-neutral-700 hover:bg-neutral-100"
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="bg-red-600 text-white hover:bg-red-700"
+                onClick={() => handleVoidBooking(selectedBooking.id, voidReason)}
+                disabled={!voidReason.trim()}
+              >
+                Void Booking
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

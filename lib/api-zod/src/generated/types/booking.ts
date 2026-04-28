@@ -23,4 +23,8 @@ export interface Booking {
   status: BookingStatus;
   createdAt: string;
   decidedAt?: string | null;
+  approvedAt?: string | null;
+  confirmedAt?: string | null;
+  voidedAt?: string | null;
+  voidedReason?: string | null;
 }

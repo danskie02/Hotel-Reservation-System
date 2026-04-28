@@ -33,6 +33,7 @@ import type {
   Room,
   UpdateRoomBody,
   UserSummary,
+  VoidBody,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -925,6 +926,177 @@ export const useAdminDecideBooking = <
   TContext
 > => {
   return useMutation(getAdminDecideBookingMutationOptions(options));
+};
+
+/**
+ * @summary Confirm client check-in (approved booking to confirmed)
+ */
+export const getAdminConfirmCheckinUrl = (id: number) => {
+  return `/api/admin/bookings/${id}/confirm-checkin`;
+};
+
+export const adminConfirmCheckin = async (
+  id: number,
+  options?: RequestInit,
+): Promise<Booking> => {
+  return customFetch<Booking>(getAdminConfirmCheckinUrl(id), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getAdminConfirmCheckinMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminConfirmCheckin>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminConfirmCheckin>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["adminConfirmCheckin"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminConfirmCheckin>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return adminConfirmCheckin(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminConfirmCheckinMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminConfirmCheckin>>
+>;
+
+export type AdminConfirmCheckinMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Confirm client check-in (approved booking to confirmed)
+ */
+export const useAdminConfirmCheckin = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminConfirmCheckin>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminConfirmCheckin>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getAdminConfirmCheckinMutationOptions(options));
+};
+
+/**
+ * @summary Void an approved booking (no-show)
+ */
+export const getAdminVoidBookingUrl = (id: number) => {
+  return `/api/admin/bookings/${id}/void`;
+};
+
+export const adminVoidBooking = async (
+  id: number,
+  voidBody: VoidBody,
+  options?: RequestInit,
+): Promise<Booking> => {
+  return customFetch<Booking>(getAdminVoidBookingUrl(id), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(voidBody),
+  });
+};
+
+export const getAdminVoidBookingMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminVoidBooking>>,
+    TError,
+    { id: number; data: BodyType<VoidBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof adminVoidBooking>>,
+  TError,
+  { id: number; data: BodyType<VoidBody> },
+  TContext
+> => {
+  const mutationKey = ["adminVoidBooking"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof adminVoidBooking>>,
+    { id: number; data: BodyType<VoidBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return adminVoidBooking(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminVoidBookingMutationResult = NonNullable<
+  Awaited<ReturnType<typeof adminVoidBooking>>
+>;
+export type AdminVoidBookingMutationBody = BodyType<VoidBody>;
+export type AdminVoidBookingMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Void an approved booking (no-show)
+ */
+export const useAdminVoidBooking = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof adminVoidBooking>>,
+    TError,
+    { id: number; data: BodyType<VoidBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof adminVoidBooking>>,
+  TError,
+  { id: number; data: BodyType<VoidBody> },
+  TContext
+> => {
+  return useMutation(getAdminVoidBookingMutationOptions(options));
 };
 
 export const getAdminListRoomsUrl = () => {

@@ -119,7 +119,9 @@ export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus];
 export const BookingStatus = {
   pending: "pending",
   approved: "approved",
+  confirmed: "confirmed",
   rejected: "rejected",
+  voided: "voided",
 } as const;
 
 export interface Booking {
@@ -138,6 +140,10 @@ export interface Booking {
   status: BookingStatus;
   createdAt: string;
   decidedAt?: string | null;
+  approvedAt?: string | null;
+  confirmedAt?: string | null;
+  voidedAt?: string | null;
+  voidedReason?: string | null;
 }
 
 export type DecisionBodyDecision =
@@ -151,6 +157,11 @@ export const DecisionBodyDecision = {
 export interface DecisionBody {
   decision: DecisionBodyDecision;
   note?: string;
+}
+
+export interface VoidBody {
+  /** @minLength 1 */
+  reason: string;
 }
 
 export interface AdminStats {
@@ -182,6 +193,8 @@ export type AdminListBookingsStatus =
 export const AdminListBookingsStatus = {
   pending: "pending",
   approved: "approved",
+  confirmed: "confirmed",
   rejected: "rejected",
+  voided: "voided",
   all: "all",
 } as const;

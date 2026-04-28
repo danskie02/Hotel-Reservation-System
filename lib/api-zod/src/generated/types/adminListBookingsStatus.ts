@@ -12,6 +12,8 @@ export type AdminListBookingsStatus =
 export const AdminListBookingsStatus = {
   pending: "pending",
   approved: "approved",
+  confirmed: "confirmed",
   rejected: "rejected",
+  voided: "voided",
   all: "all",
 } as const;

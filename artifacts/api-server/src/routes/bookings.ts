@@ -34,6 +34,10 @@ function serializeBooking(row: {
     status: booking.status,
     createdAt: booking.createdAt.toISOString(),
     decidedAt: booking.decidedAt ? booking.decidedAt.toISOString() : null,
+    approvedAt: booking.approvedAt ? booking.approvedAt.toISOString() : null,
+    confirmedAt: booking.confirmedAt ? booking.confirmedAt.toISOString() : null,
+    voidedAt: booking.voidedAt ? booking.voidedAt.toISOString() : null,
+    voidedReason: booking.voidedReason,
   };
 }
 

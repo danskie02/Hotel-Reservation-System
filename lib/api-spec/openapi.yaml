@@ -151,7 +151,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [pending, approved, rejected, all]
+            enum: [pending, approved, confirmed, rejected, voided, all]
       responses:
         "200":
           description: All bookings
@@ -175,6 +175,45 @@ paths:
         content:
           application/json:
             schema: { $ref: "#/components/schemas/DecisionBody" }
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Booking" }
+
+  /admin/bookings/{id}/confirm-checkin:
+    post:
+      operationId: adminConfirmCheckin
+      tags: [admin]
+      summary: Confirm client check-in (approved booking to confirmed)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Booking" }
+
+  /admin/bookings/{id}/void:
+    post:
+      operationId: adminVoidBooking
+      tags: [admin]
+      summary: Void an approved booking (no-show)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VoidBody" }
       responses:
         "200":
           description: Updated booking
@@ -416,9 +455,25 @@ components:
           oneOf:
             - { type: string }
             - { type: "null" }
-        status: { type: string, enum: [pending, approved, rejected] }
+        status: { type: string, enum: [pending, approved, confirmed, rejected, voided] }
         createdAt: { type: string }
         decidedAt:
+          oneOf:
+            - { type: string }
+            - { type: "null" }
+        approvedAt:
+          oneOf:
+            - { type: string }
+            - { type: "null" }
+        confirmedAt:
+          oneOf:
+            - { type: string }
+            - { type: "null" }
+        voidedAt:
+          oneOf:
+            - { type: string }
+            - { type: "null" }
+        voidedReason:
           oneOf:
             - { type: string }
             - { type: "null" }
@@ -429,6 +484,12 @@ components:
       properties:
         decision: { type: string, enum: [approve, reject] }
         note: { type: string }
+
+    VoidBody:
+      type: object
+      required: [reason]
+      properties:
+        reason: { type: string, minLength: 1 }
 
     AdminStats:
       type: object

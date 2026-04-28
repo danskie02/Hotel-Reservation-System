@@ -87,9 +87,14 @@ router.post("/admin/bookings/:id/decision", async (req, res): Promise<void> => {
     return;
   }
   const newStatus = parsed.data.decision === "approve" ? "approved" : "rejected";
+  const now = new Date();
   const [updated] = await db
     .update(bookingsTable)
-    .set({ status: newStatus, decidedAt: new Date() })
+    .set({ 
+      status: newStatus, 
+      decidedAt: now,
+      approvedAt: newStatus === "approved" ? now : undefined,
+    })
     .where(eq(bookingsTable.id, id))
     .returning();
   if (!updated) {
@@ -111,6 +116,84 @@ router.post("/admin/bookings/:id/decision", async (req, res): Promise<void> => {
       bookingId: updated.id,
     });
   }
+
+  res.json(serializeBooking({ booking: updated, room: room ?? null, user: user ?? null }));
+});
+
+router.post("/admin/bookings/:id/confirm-checkin", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(raw ?? "", 10);
+  if (Number.isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  const [booking] = await db.select().from(bookingsTable).where(eq(bookingsTable.id, id)).limit(1);
+  if (!booking) {
+    res.status(404).json({ error: "Booking not found" });
+    return;
+  }
+
+  if (booking.status !== "approved") {
+    res.status(400).json({ error: "Only approved bookings can be confirmed" });
+    return;
+  }
+
+  const [updated] = await db
+    .update(bookingsTable)
+    .set({ status: "confirmed", confirmedAt: new Date() })
+    .where(eq(bookingsTable.id, id))
+    .returning();
+
+  if (!updated) {
+    res.status(500).json({ error: "Failed to confirm checkin" });
+    return;
+  }
+
+  const [room] = await db.select().from(roomsTable).where(eq(roomsTable.id, updated.roomId));
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, updated.userId));
+
+  res.json(serializeBooking({ booking: updated, room: room ?? null, user: user ?? null }));
+});
+
+router.post("/admin/bookings/:id/void", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(raw ?? "", 10);
+  if (Number.isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  const { reason } = req.body || {};
+  if (!reason || typeof reason !== "string") {
+    res.status(400).json({ error: "Reason is required" });
+    return;
+  }
+
+  const [booking] = await db.select().from(bookingsTable).where(eq(bookingsTable.id, id)).limit(1);
+  if (!booking) {
+    res.status(404).json({ error: "Booking not found" });
+    return;
+  }
+
+  if (booking.status !== "approved") {
+    res.status(400).json({ error: "Only approved bookings can be voided" });
+    return;
+  }
+
+  const [updated] = await db
+    .update(bookingsTable)
+    .set({ status: "voided", voidedAt: new Date(), voidedReason: reason })
+    .where(eq(bookingsTable.id, id))
+    .returning();
+
+  if (!updated) {
+    res.status(500).json({ error: "Failed to void booking" });
+    return;
+  }
+
+  const [room] = await db.select().from(roomsTable).where(eq(roomsTable.id, updated.roomId));
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, updated.userId));
 
   res.json(serializeBooking({ booking: updated, room: room ?? null, user: user ?? null }));
 });

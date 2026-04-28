@@ -11,6 +11,10 @@ export const bookingsTable = pgTable("bookings", {
   status: text("status").notNull().default("pending"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   decidedAt: timestamp("decided_at", { withTimezone: true }),
+  approvedAt: timestamp("approved_at", { withTimezone: true }),
+  confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+  voidedAt: timestamp("voided_at", { withTimezone: true }),
+  voidedReason: text("voided_reason"),
 });
 
 export type Booking = typeof bookingsTable.$inferSelect;

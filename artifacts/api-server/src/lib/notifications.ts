@@ -185,6 +185,14 @@ export async function sendBookingDecisionEmail(
   ctx: BookingEmailContext,
 ): Promise<void> {
   const isApproved = decision === "approved";
+  const intro = isApproved
+    ? "Great news! Your booking request has been approved. Please note that your reservation is only valid within 8 hours from the time this email was sent. Kindly ensure that you arrive within the given time frame. Otherwise, your booking will be automatically declined."
+    : "Thank you for your interest. We are sorry, but your booking request was not approved at this time.";
+  
+  const closing = isApproved
+    ? "We look forward to welcoming you to Balar Hotel. Remember, you have 8 hours from the timestamp of this email to arrive and confirm your check-in."
+    : "You may submit another request with different dates or room preferences.";
+  
   await sendEmail({
     to: ctx.guestEmail,
     subject: isApproved
@@ -193,26 +201,18 @@ export async function sendBookingDecisionEmail(
     text: [
       `Hello ${ctx.guestName},`,
       "",
-      isApproved
-        ? "Great news! Your booking request has been approved."
-        : "Thank you for your interest. We are sorry, but your booking request was not approved at this time.",
+      intro,
       "",
       bookingDetailsBlock(ctx),
       "",
-      isApproved
-        ? "We look forward to welcoming you to Balar Hotel."
-        : "You may submit another request with different dates or room preferences.",
+      closing,
       "",
       "Balar iBOOK",
     ].join("\n"),
     html: buildBrandedHtmlEmail({
       title: isApproved ? "Booking Approved" : "Booking Rejected",
-      intro: isApproved
-        ? "Great news! Your booking request has been approved."
-        : "Thank you for your interest. We are sorry, but your booking request was not approved at this time.",
-      closing: isApproved
-        ? "We look forward to welcoming you to Balar Hotel."
-        : "You may submit another request with different dates or room preferences.",
+      intro: intro,
+      closing: closing,
       ctx,
     }),
   });

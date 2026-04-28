@@ -11,5 +11,7 @@ export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus];
 export const BookingStatus = {
   pending: "pending",
   approved: "approved",
+  confirmed: "confirmed",
   rejected: "rejected",
+  voided: "voided",
 } as const;

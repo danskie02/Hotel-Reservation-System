@@ -142,9 +142,13 @@ export const CreateBookingResponse = zod.object({
   checkOut: zod.string(),
   guestCount: zod.number(),
   specialRequests: zod.union([zod.string(), zod.null()]).optional(),
-  status: zod.enum(["pending", "approved", "rejected"]),
+  status: zod.enum(["pending", "approved", "confirmed", "rejected", "voided"]),
   createdAt: zod.string(),
   decidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  approvedAt: zod.union([zod.string(), zod.null()]).optional(),
+  confirmedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedReason: zod.union([zod.string(), zod.null()]).optional(),
 });
 
 /**
@@ -163,9 +167,13 @@ export const ListMyBookingsResponseItem = zod.object({
   checkOut: zod.string(),
   guestCount: zod.number(),
   specialRequests: zod.union([zod.string(), zod.null()]).optional(),
-  status: zod.enum(["pending", "approved", "rejected"]),
+  status: zod.enum(["pending", "approved", "confirmed", "rejected", "voided"]),
   createdAt: zod.string(),
   decidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  approvedAt: zod.union([zod.string(), zod.null()]).optional(),
+  confirmedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedReason: zod.union([zod.string(), zod.null()]).optional(),
 });
 export const ListMyBookingsResponse = zod.array(ListMyBookingsResponseItem);
 
@@ -173,7 +181,9 @@ export const ListMyBookingsResponse = zod.array(ListMyBookingsResponseItem);
  * @summary List all bookings (admin)
  */
 export const AdminListBookingsQueryParams = zod.object({
-  status: zod.enum(["pending", "approved", "rejected", "all"]).optional(),
+  status: zod
+    .enum(["pending", "approved", "confirmed", "rejected", "voided", "all"])
+    .optional(),
 });
 
 export const AdminListBookingsResponseItem = zod.object({
@@ -189,9 +199,13 @@ export const AdminListBookingsResponseItem = zod.object({
   checkOut: zod.string(),
   guestCount: zod.number(),
   specialRequests: zod.union([zod.string(), zod.null()]).optional(),
-  status: zod.enum(["pending", "approved", "rejected"]),
+  status: zod.enum(["pending", "approved", "confirmed", "rejected", "voided"]),
   createdAt: zod.string(),
   decidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  approvedAt: zod.union([zod.string(), zod.null()]).optional(),
+  confirmedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedReason: zod.union([zod.string(), zod.null()]).optional(),
 });
 export const AdminListBookingsResponse = zod.array(
   AdminListBookingsResponseItem,
@@ -222,9 +236,75 @@ export const AdminDecideBookingResponse = zod.object({
   checkOut: zod.string(),
   guestCount: zod.number(),
   specialRequests: zod.union([zod.string(), zod.null()]).optional(),
-  status: zod.enum(["pending", "approved", "rejected"]),
+  status: zod.enum(["pending", "approved", "confirmed", "rejected", "voided"]),
   createdAt: zod.string(),
   decidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  approvedAt: zod.union([zod.string(), zod.null()]).optional(),
+  confirmedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedReason: zod.union([zod.string(), zod.null()]).optional(),
+});
+
+/**
+ * @summary Confirm client check-in (approved booking to confirmed)
+ */
+export const AdminConfirmCheckinParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const AdminConfirmCheckinResponse = zod.object({
+  id: zod.number(),
+  roomId: zod.number(),
+  roomName: zod.string(),
+  roomImage: zod.string().optional(),
+  userId: zod.number(),
+  guestName: zod.string(),
+  guestEmail: zod.string(),
+  guestContact: zod.string(),
+  checkIn: zod.string(),
+  checkOut: zod.string(),
+  guestCount: zod.number(),
+  specialRequests: zod.union([zod.string(), zod.null()]).optional(),
+  status: zod.enum(["pending", "approved", "confirmed", "rejected", "voided"]),
+  createdAt: zod.string(),
+  decidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  approvedAt: zod.union([zod.string(), zod.null()]).optional(),
+  confirmedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedReason: zod.union([zod.string(), zod.null()]).optional(),
+});
+
+/**
+ * @summary Void an approved booking (no-show)
+ */
+export const AdminVoidBookingParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const AdminVoidBookingBody = zod.object({
+  reason: zod.string().min(1),
+});
+
+export const AdminVoidBookingResponse = zod.object({
+  id: zod.number(),
+  roomId: zod.number(),
+  roomName: zod.string(),
+  roomImage: zod.string().optional(),
+  userId: zod.number(),
+  guestName: zod.string(),
+  guestEmail: zod.string(),
+  guestContact: zod.string(),
+  checkIn: zod.string(),
+  checkOut: zod.string(),
+  guestCount: zod.number(),
+  specialRequests: zod.union([zod.string(), zod.null()]).optional(),
+  status: zod.enum(["pending", "approved", "confirmed", "rejected", "voided"]),
+  createdAt: zod.string(),
+  decidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  approvedAt: zod.union([zod.string(), zod.null()]).optional(),
+  confirmedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedReason: zod.union([zod.string(), zod.null()]).optional(),
 });
 
 export const AdminListRoomsResponseItem = zod.object({
@@ -343,9 +423,13 @@ export const AdminRecentActivityResponseItem = zod.object({
   checkOut: zod.string(),
   guestCount: zod.number(),
   specialRequests: zod.union([zod.string(), zod.null()]).optional(),
-  status: zod.enum(["pending", "approved", "rejected"]),
+  status: zod.enum(["pending", "approved", "confirmed", "rejected", "voided"]),
   createdAt: zod.string(),
   decidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  approvedAt: zod.union([zod.string(), zod.null()]).optional(),
+  confirmedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedAt: zod.union([zod.string(), zod.null()]).optional(),
+  voidedReason: zod.union([zod.string(), zod.null()]).optional(),
 });
 export const AdminRecentActivityResponse = zod.array(
   AdminRecentActivityResponseItem,

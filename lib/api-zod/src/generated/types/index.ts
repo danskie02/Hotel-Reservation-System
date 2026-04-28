@@ -28,3 +28,4 @@ export * from "./user";
 export * from "./userRole";
 export * from "./userSummary";
 export * from "./userSummaryRole";
+export * from "./voidBody";
