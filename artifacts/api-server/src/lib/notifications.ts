@@ -186,7 +186,7 @@ export async function sendBookingDecisionEmail(
 ): Promise<void> {
   const isApproved = decision === "approved";
   const intro = isApproved
-    ? "Great news! Your booking request has been approved. Please note that your reservation is only valid within 8 hours from the time this email was sent. Kindly ensure that you arrive within the given time frame. Otherwise, your booking will be automatically declined."
+    ? "Great news! Your booking request has been approved. Please note that your reservation is only valid within 8 hours from the time this email was sent. Kindly ensure that you arrive within the given book schedule. Otherwise, your booking will be automatically declined."
     : "Thank you for your interest. We are sorry, but your booking request was not approved at this time.";
   
   const closing = isApproved
